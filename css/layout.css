@@ -1,0 +1,184 @@
+/* ==========================================================================
+   KLIMAX Teplice – Layout Primitives
+   --------------------------------------------------------------------------
+   Container, section, and grid utilities. Mobile-first with progressive
+   enhancement at sm (480), md (768), lg (1024), xl (1280) breakpoints.
+   ========================================================================== */
+
+
+/* ==========================================================================
+   1. CONTAINER
+   ========================================================================== */
+
+.container {
+  width: 100%;
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+}
+
+/* Narrower container variant for text-heavy content */
+.container--narrow {
+  max-width: 800px;
+}
+
+/* Wider container for full-bleed sections */
+.container--wide {
+  max-width: 1400px;
+}
+
+
+/* ==========================================================================
+   2. SECTION
+   ========================================================================== */
+
+.section {
+  padding-top: 3rem;
+  padding-bottom: 3rem;
+  position: relative;
+}
+
+/* --- Section Header ------------------------------------------------------- */
+.section__header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.section__title {
+  position: relative;
+  display: inline-block;
+  margin-bottom: 1rem;
+}
+
+/* Accent underline beneath section titles */
+.section__title::after {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 48px;
+  height: 3px;
+  background: var(--accent-klimax);
+  border-radius: 2px;
+  transition: width var(--transition-base);
+}
+
+.section__title:hover::after {
+  width: 72px;
+}
+
+.section__subtitle {
+  color: var(--text-secondary);
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 1rem;
+  font-size: 1rem;
+  line-height: 1.7;
+}
+
+/* --- Dark Section Variant ------------------------------------------------- */
+.section--dark {
+  background-color: var(--bg-primary);
+  color: #ffffff;
+}
+
+.section--dark .section__title {
+  color: #ffffff;
+}
+
+.section--dark .section__subtitle {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+
+/* ==========================================================================
+   3. GRID UTILITIES
+   ========================================================================== */
+
+/*
+ * Reusable grid system. Each grid defaults to single column (mobile-first)
+ * and expands at larger breakpoints via media queries below.
+ */
+
+.grid {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.grid--2 { --grid-columns: 2; }
+.grid--3 { --grid-columns: 3; }
+.grid--4 { --grid-columns: 4; }
+
+
+/* ==========================================================================
+   4. RESPONSIVE BREAKPOINTS (Mobile-First)
+   ========================================================================== */
+
+/* --- sm: 480px ------------------------------------------------------------ */
+@media (min-width: 480px) {
+  .section__subtitle {
+    font-size: 1.0625rem;
+  }
+}
+
+/* --- md: 768px ------------------------------------------------------------ */
+@media (min-width: 768px) {
+  .section {
+    padding-top: 4rem;
+    padding-bottom: 4rem;
+  }
+
+  .section__header {
+    margin-bottom: 2.5rem;
+  }
+
+  .section__subtitle {
+    font-size: 1.125rem;
+  }
+
+  /* Grid expands to 2 columns at md */
+  .grid--2,
+  .grid--3,
+  .grid--4 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* --- lg: 1024px ----------------------------------------------------------- */
+@media (min-width: 1024px) {
+  .section {
+    padding-top: 5rem;
+    padding-bottom: 5rem;
+  }
+
+  .section__header {
+    margin-bottom: 3rem;
+  }
+
+  /* 3-col grid at lg */
+  .grid--3 {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  /* 4-col grid starts as 3 at lg */
+  .grid--4 {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* --- xl: 1280px ----------------------------------------------------------- */
+@media (min-width: 1280px) {
+  .container {
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+
+  /* Full 4-col grid at xl */
+  .grid--4 {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}

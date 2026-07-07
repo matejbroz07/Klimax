@@ -1,0 +1,1069 @@
+/* ==========================================================================
+   KLIMAX Teplice – Components
+   --------------------------------------------------------------------------
+   All reusable UI components: navigation, buttons, trust bar, cards,
+   KORE teaser, CTA section, footer, and scroll-triggered animations.
+   ========================================================================== */
+
+
+/* ==========================================================================
+   1. NAVIGATION (.nav)
+   ==========================================================================
+   Fixed top bar. Starts transparent over the hero, transitions to a frosted
+   glass surface on scroll via JS-toggled .nav--scrolled class.
+   ========================================================================== */
+
+.nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: var(--z-nav);
+  background: transparent;
+  border-bottom: 1px solid transparent;
+  transition:
+    background var(--transition-base),
+    border-color var(--transition-base),
+    box-shadow var(--transition-base);
+}
+
+/* Scrolled state – frosted glass */
+.nav--scrolled {
+  background: rgba(18, 20, 24, 0.75);
+  -webkit-backdrop-filter: blur(24px) saturate(1.5);
+  backdrop-filter: blur(24px) saturate(1.5);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+}
+
+/* --- Nav Inner ------------------------------------------------------------- */
+.nav__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: var(--nav-height);
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+  transition: height var(--transition-smooth);
+}
+
+.nav--scrolled .nav__inner {
+  height: var(--nav-height-scrolled);
+}
+
+/* --- Logo ----------------------------------------------------------------- */
+.nav__logo {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  text-decoration: none;
+  flex-shrink: 0;
+}
+
+.nav__logo-img {
+  height: 20px;
+  width: auto;
+  display: block;
+}
+
+/* --- Menu ----------------------------------------------------------------- */
+.nav__menu {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+
+.nav__menu-item {
+  position: relative;
+}
+
+.nav__menu-link {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  font-weight: 500;
+  padding: 0.25rem 0;
+  position: relative;
+  transition: color var(--transition-base);
+}
+
+/* Accent underline on hover */
+.nav__menu-link::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: var(--accent-klimax);
+  border-radius: 1px;
+  transition: width var(--transition-base);
+}
+
+.nav__menu-link:hover,
+.nav__menu-link--active {
+  color: var(--text-primary);
+}
+
+.nav__menu-link:hover::after,
+.nav__menu-link--active::after {
+  width: 100%;
+}
+
+/* --- Nav CTA -------------------------------------------------------------- */
+.nav__cta {
+  margin-left: 0.5rem;
+}
+
+/* --- Hamburger Toggle ----------------------------------------------------- */
+.nav__toggle {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  width: 32px;
+  height: 32px;
+  cursor: pointer;
+  padding: 0;
+  background: none;
+  border: none;
+  position: relative;
+  z-index: calc(var(--z-nav) + 10);
+}
+
+.nav__toggle-bar {
+  display: block;
+  width: 24px;
+  height: 2px;
+  background-color: var(--text-primary);
+  border-radius: 2px;
+  transition:
+    transform var(--transition-base),
+    opacity var(--transition-base);
+}
+
+/* Hamburger → X animation when menu open */
+.nav__toggle.active .nav__toggle-bar:nth-child(1) {
+  transform: translateY(7px) rotate(45deg);
+}
+
+.nav__toggle.active .nav__toggle-bar:nth-child(2) {
+  opacity: 0;
+}
+
+.nav__toggle.active .nav__toggle-bar:nth-child(3) {
+  transform: translateY(-7px) rotate(-45deg);
+}
+
+/* --- Mobile Menu (< 768px) ------------------------------------------------ */
+@media (max-width: 767px) {
+  .nav__toggle {
+    display: flex;
+  }
+
+  .nav__menu {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 100%;
+    height: 100vh;
+    height: 100dvh;
+    background: rgba(26, 29, 36, 0.97);
+    -webkit-backdrop-filter: blur(24px);
+    backdrop-filter: blur(24px);
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 2rem;
+    padding: 2rem;
+    transform: translateX(100%);
+    transition: transform var(--transition-smooth);
+  }
+
+  .nav__menu--open {
+    transform: translateX(0);
+  }
+
+  .nav__menu-link {
+    font-size: 1.25rem;
+  }
+
+  .nav__cta {
+    margin-left: 0;
+    margin-top: 1rem;
+  }
+}
+
+
+/* ==========================================================================
+   2. BUTTONS (.btn)
+   ==========================================================================
+   Versatile button system with primary (KLIMAX blue), secondary (outline),
+   ghost (text), and Hisense-branded variants.
+   ========================================================================== */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.75rem;
+  border: none;
+  border-radius: var(--radius-md);
+  font-family: var(--font-primary);
+  font-weight: 600;
+  font-size: 0.9rem;
+  line-height: 1.4;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    background-color var(--transition-base),
+    color var(--transition-base),
+    border-color var(--transition-base),
+    box-shadow var(--transition-base),
+    transform var(--transition-fast);
+  white-space: nowrap;
+}
+
+.btn:active {
+  transform: scale(0.97);
+}
+
+/* --- Primary: KLIMAX Blue fill -------------------------------------------- */
+.btn--primary {
+  background-color: var(--accent-klimax);
+  color: #ffffff;
+  border: 1px solid transparent;
+}
+
+.btn--primary:hover {
+  background-color: var(--accent-klimax-hover);
+  box-shadow: var(--shadow-glow-klimax);
+}
+
+/* --- Secondary: Outlined -------------------------------------------------- */
+.btn--secondary {
+  background-color: transparent;
+  color: var(--text-primary);
+  border: 1px solid var(--border-color-hover);
+}
+
+.btn--secondary:hover {
+  border-color: var(--accent-klimax);
+  color: var(--accent-klimax);
+}
+
+/* --- Ghost: Text-only ----------------------------------------------------- */
+.btn--ghost {
+  background-color: transparent;
+  color: var(--accent-klimax);
+  border: 1px solid transparent;
+  padding: 0.5rem 1rem;
+}
+
+.btn--ghost:hover {
+  background-color: var(--accent-klimax-glow);
+}
+
+/* --- White: Solid white fill ---------------------------------------------- */
+.btn--white {
+  background-color: #ffffff;
+  color: var(--accent-klimax);
+  border: 1px solid transparent;
+}
+
+.btn--white:hover {
+  background-color: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* --- Ghost White: Text-only, white text ----------------------------------- */
+.btn--ghost-white {
+  background-color: transparent;
+  color: #ffffff;
+  border: 1px solid transparent;
+  padding: 0.5rem 1rem;
+}
+
+.btn--ghost-white:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* --- Hisense: Teal fill (brand-specific) ---------------------------------- */
+.btn--hisense {
+  background-color: var(--accent-hisense);
+  color: #ffffff;
+  border: 1px solid transparent;
+}
+
+.btn--hisense:hover {
+  background-color: var(--accent-hisense-hover);
+  box-shadow: var(--shadow-glow-hisense);
+}
+
+/* --- Hisense: Outlined ---------------------------------------------------- */
+.btn--hisense-outline {
+  background-color: transparent;
+  color: var(--accent-hisense);
+  border: 1px solid var(--accent-hisense);
+}
+
+.btn--hisense-outline:hover {
+  background-color: rgba(0, 179, 172, 0.1);
+  color: var(--accent-hisense);
+  box-shadow: 0 0 15px rgba(0, 179, 172, 0.2);
+}
+
+
+/* ==========================================================================
+   3. TRUST BAR (.trust-bar)
+   ==========================================================================
+   Horizontal band of partner / certification logos in muted grayscale.
+   ========================================================================== */
+
+.trust-bar {
+  background-color: var(--bg-primary);
+  padding: 2.5rem 0;
+  border-top: none;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+}
+
+.trust-bar__label {
+  color: rgba(255, 255, 255, 0.3);
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  font-size: 0.7rem;
+  font-weight: 500;
+  text-align: center;
+  margin-bottom: 1.25rem;
+}
+
+.trust-bar__logos {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 2.5rem;
+  flex-wrap: wrap;
+  padding: 0 1rem;
+}
+
+.trust-bar__item {
+  opacity: 0.5;
+  filter: grayscale(100%);
+  font-size: 0.95rem;
+  color: rgba(255, 255, 255, 0.8);
+  font-weight: 600;
+  letter-spacing: 1px;
+  padding: 0.5rem 0;
+  transition:
+    opacity var(--transition-base),
+    filter var(--transition-base);
+  white-space: nowrap;
+}
+
+.trust-bar__item:hover {
+  opacity: 1;
+  color: #ffffff;
+  filter: grayscale(0%);
+}
+
+.trust-bar__item img {
+  height: 28px;
+  width: auto;
+}
+
+/* Wider spacing on desktop */
+@media (min-width: 768px) {
+  .trust-bar__logos {
+    gap: 4rem;
+  }
+}
+
+
+/* ==========================================================================
+/* ==========================================================================
+   4. Z-PATTERN ROW (.z-row)
+   ==========================================================================
+   Premium alternating image and text blocks used for core pillars.
+   ========================================================================== */
+
+.z-row {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 3rem;
+  align-items: center;
+  margin-bottom: 6rem;
+}
+
+.z-row:last-child {
+  margin-bottom: 0;
+}
+
+@media (min-width: 1024px) {
+  .z-row {
+    grid-template-columns: 1fr 1fr;
+    gap: 6rem;
+  }
+  
+  .z-row--reverse .z-row__content {
+    order: 2;
+  }
+  
+  .z-row--reverse .z-row__image {
+    order: 1;
+  }
+}
+
+.z-row__content {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  z-index: 2;
+}
+
+.z-row__label {
+  color: var(--accent-klimax);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-size: 0.8rem;
+  margin-bottom: 1rem;
+}
+
+.z-row__title {
+  font-size: 2.5rem;
+  margin-bottom: 1.5rem;
+  line-height: 1.1;
+  color: var(--text-primary);
+}
+
+.z-row__text {
+  color: var(--text-secondary);
+  font-size: 1.125rem;
+  line-height: 1.8;
+}
+
+.z-row__image {
+  position: relative;
+  z-index: 0;
+  /* Wave-inspired asymmetric shape */
+  border-radius: 120px 15px 120px 15px;
+  overflow: hidden;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+  transition: border-radius var(--transition-slow), transform var(--transition-base);
+}
+
+.z-row--reverse .z-row__image {
+  border-radius: 15px 120px 15px 120px;
+}
+
+.z-row__image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+
+
+/* ==========================================================================
+   5. BRANDS HERO (.brands-hero)
+   ==========================================================================
+   Featured structural layout for Hisense
+   ========================================================================== */
+
+.brands-hero {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 3rem;
+  align-items: center;
+  margin-top: 2rem;
+}
+
+@media (min-width: 900px) {
+  .brands-hero {
+    grid-template-columns: 1fr 1fr;
+    gap: 5rem;
+  }
+}
+
+.brands-hero__content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.brands-hero__badge {
+  color: var(--accent-hisense);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-size: 0.85rem;
+  margin-bottom: 1.5rem;
+}
+
+.brands-hero__logo {
+  margin-bottom: 2rem;
+}
+
+.brands-hero__title {
+  color: #ffffff;
+  font-size: 2.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.brands-hero__desc {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 1.15rem;
+  line-height: 1.7;
+  margin-bottom: 2.5rem;
+  max-width: 600px;
+}
+
+.brands-hero__image {
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+  position: relative;
+}
+
+.brands-hero__image::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.1);
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+.brands-hero__image img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* ==========================================================================
+   5.5 BRAND ROWS (.brand-row)
+   ==========================================================================
+   Directory/list layout for represented brands. Clean, minimalist B2B style.
+   ========================================================================== */
+
+.brands-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.brand-row {
+  display: flex;
+  align-items: center;
+  padding: 2.5rem;
+  border-bottom: 1px solid var(--border-color);
+  color: var(--text-primary);
+  text-decoration: none;
+  text-decoration: none;
+  transition: all 0.4s ease;
+  position: relative;
+  background-color: transparent;
+}
+
+.brand-row:first-child {
+  border-top: 1px solid var(--border-color);
+}
+
+.brand-row:hover {
+  background-color: rgba(255, 255, 255, 0.015);
+}
+
+.brand-row__logo {
+  flex: 0 0 250px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+
+.brand-row__logo img, .brand-row__logo svg {
+  max-width: 160px;
+  max-height: 40px;
+  width: auto;
+  height: auto;
+  display: block;
+  object-fit: contain;
+  filter: brightness(0) invert(1);
+  transition: filter 0.3s ease;
+}
+
+.brand-row:hover .brand-row__logo img,
+.brand-row:hover .brand-row__logo svg {
+  filter: none;
+}
+
+.brand-row__badge {
+  color: var(--accent-hisense);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-size: 0.7rem;
+  margin-top: 0.5rem;
+}
+
+.brand-row__content {
+  flex: 1;
+  padding: 0 2rem;
+  color: rgba(255, 255, 255, 0.7);
+  transition: color 0.3s ease;
+}
+
+.brand-row__desc {
+  margin: 0;
+  font-size: 1.1rem;
+  max-width: 800px;
+  line-height: 1.6;
+}
+
+.brand-row__action {
+  flex: 0 0 50px;
+  display: flex;
+  justify-content: flex-end;
+  color: var(--border-color);
+  transition: all 0.3s ease;
+}
+
+.brand-row:hover .brand-row__action {
+  transform: translateX(10px);
+}
+
+/* --- Brand-Specific Hover Colors --- */
+#brand-hisense:hover .brand-row__action { color: #00B3AC; }
+#brand-hisense:hover { border-bottom-color: #00B3AC; }
+
+#brand-toshiba:hover .brand-row__action { color: #E31837; }
+#brand-toshiba:hover { border-bottom-color: #E31837; }
+
+#brand-multiwarm:hover .brand-row__action { color: #F58220; }
+#brand-multiwarm:hover { border-bottom-color: #F58220; }
+
+#brand-hokkaido:hover .brand-row__action { color: #00509E; }
+#brand-hokkaido:hover { border-bottom-color: #00509E; }
+
+/* Responsive */
+@media (max-width: 768px) {
+  .brand-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.5rem;
+    padding: 2rem 0;
+  }
+  .brand-row__logo { flex: auto; }
+  .brand-row__content { padding: 0; }
+  .brand-row__action { align-self: flex-end; }
+}
+
+
+/* ==========================================================================
+   6. SERVICE CARDS (.service-card)
+   ==========================================================================
+   Left-bordered cards for the services preview section. 2×2 grid on desktop.
+   ========================================================================== */
+
+.services-preview__grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .services-preview__grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .services-preview__grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.service-card {
+  position: relative;
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  min-height: 480px;
+  display: flex;
+  align-items: flex-end;
+  background: var(--bg-primary);
+  transition: transform var(--transition-base);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+}
+
+.service-card:hover {
+  transform: translateY(-5px);
+}
+
+.service-card__bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 0;
+  transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.service-card:hover .service-card__bg {
+  transform: scale(1.08);
+}
+
+.service-card__overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(18, 20, 24, 0.95) 0%, rgba(18, 20, 24, 0.4) 60%, transparent 100%);
+  z-index: 1;
+  transition: background var(--transition-base);
+}
+
+.service-card:hover .service-card__overlay {
+  background: linear-gradient(to top, rgba(18, 20, 24, 0.95) 0%, rgba(18, 20, 24, 0.8) 100%);
+}
+
+.service-card__content {
+  position: relative;
+  z-index: 2;
+  padding: 2.5rem 2rem;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.service-card__icon {
+  color: var(--accent-klimax);
+  margin-bottom: 1rem;
+}
+
+.service-card__title {
+  color: #ffffff;
+  font-size: 1.5rem;
+  margin-bottom: 0;
+  transition: margin var(--transition-base);
+}
+
+.service-card__text {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.95rem;
+  line-height: 1.6;
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition: max-height var(--transition-base), opacity var(--transition-base), margin var(--transition-base);
+}
+
+.service-card:hover .service-card__title {
+  margin-bottom: 0.5rem;
+}
+
+.service-card:hover .service-card__text {
+  max-height: 200px;
+  opacity: 1;
+  margin-top: 0.5rem;
+}
+
+
+/* ==========================================================================
+   7. KORE TEASER (.kore-teaser)
+   ==========================================================================
+   Full width feature highlight section with a wave separator at the top.
+   ========================================================================== */
+
+.kore-teaser {
+  position: relative;
+  background-color: var(--bg-secondary);
+  padding: 8rem 0 6rem;
+}
+
+.kore-teaser__wave-top {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  overflow: hidden;
+  line-height: 0;
+}
+
+.kore-teaser__wave-top svg {
+  position: relative;
+  display: block;
+  width: calc(100% + 1.3px);
+  height: 60px;
+}
+
+@media (min-width: 768px) {
+  .kore-teaser__wave-top svg {
+    height: 90px;
+  }
+}
+
+/* Pseudo-elements removed – clean flat card, no animated borders */
+
+.kore-teaser__content {
+  position: relative;
+  z-index: var(--z-base);
+  max-width: 700px;
+}
+
+.kore-teaser__content h2 {
+  margin-bottom: 1rem;
+}
+
+.kore-teaser__content p {
+  margin-bottom: 1.5rem;
+}
+
+.kore-teaser__features {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.kore-teaser__feature {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+.kore-teaser__feature-icon {
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent-klimax);
+  font-size: 1rem;
+}
+
+@media (min-width: 768px) {
+  .kore-teaser {
+    padding: 4rem 3rem;
+  }
+
+  .kore-teaser__features {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+
+/* ==========================================================================
+   8. CTA SECTION (.cta-section)
+   ==========================================================================
+   Vibrant full-color call-to-action block.
+   ========================================================================== */
+
+.cta-section {
+  position: relative;
+  background-color: var(--accent-klimax);
+  text-align: center;
+  padding: 5rem 0;
+}
+.cta-section__content {
+  max-width: 650px;
+  margin: 0 auto;
+}
+
+.cta-section__content h2 {
+  margin-bottom: 1rem;
+}
+
+.cta-section__content p {
+  margin-bottom: 2rem;
+}
+
+@media (min-width: 768px) {
+  .cta-section {
+    padding: 5rem 0;
+  }
+}
+
+@media (min-width: 1024px) {
+  .cta-section {
+    padding: 6rem 0;
+  }
+}
+
+
+/* ==========================================================================
+   9. FOOTER (.footer)
+   ==========================================================================
+   Dark footer with 4-column grid, links, contact info, and bottom bar.
+   ========================================================================== */
+
+.footer {
+  background-color: var(--bg-primary);
+  border-top: 1px solid var(--border-color);
+  padding: 3rem 0 1.5rem;
+}
+
+.footer__grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+.footer__col {
+  min-width: 0; /* Prevent overflow in grid */
+}
+
+.footer__title {
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.footer__links {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.footer__link {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  text-decoration: none;
+  transition: color var(--transition-base);
+}
+
+.footer__link:hover {
+  color: var(--text-primary);
+}
+
+.footer__contact-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  color: var(--text-secondary);
+  margin-bottom: 1rem;
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+.footer__contact-item:last-child {
+  margin-bottom: 0;
+}
+
+.footer__contact-icon {
+  flex-shrink: 0;
+  color: var(--accent-klimax);
+  margin-top: 2px;
+}
+
+/* --- Footer Bottom Bar ---------------------------------------------------- */
+.footer__bottom {
+  border-top: 1px solid var(--border-color);
+  padding-top: 1.5rem;
+  margin-top: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  align-items: center;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+}
+
+/* Responsive footer */
+@media (min-width: 480px) {
+  .footer__grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 768px) {
+  .footer {
+    padding: 4rem 0 2rem;
+  }
+
+  .footer__title {
+    margin-bottom: 1.5rem;
+  }
+
+  .footer__bottom {
+    flex-direction: row;
+    justify-content: space-between;
+    padding-top: 2rem;
+    margin-top: 3rem;
+    text-align: left;
+  }
+}
+
+@media (min-width: 1024px) {
+  .footer__grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+
+/* ==========================================================================
+   10. FADE-IN ANIMATIONS
+   ==========================================================================
+   Scroll-triggered entrance animations. The .fade-in--visible class is
+   toggled by JavaScript (IntersectionObserver) when elements enter viewport.
+   ========================================================================== */
+
+/* --- Base: Fade Up -------------------------------------------------------- */
+.fade-in,
+.fade-in-up {
+  opacity: 0;
+  transform: translateY(20px);
+  transition:
+    opacity 0.6s ease,
+    transform 0.6s ease;
+}
+
+/* --- Variant: Fade from Left ---------------------------------------------- */
+.fade-in-left {
+  opacity: 0;
+  transform: translateX(-20px);
+  transition:
+    opacity 0.6s ease,
+    transform 0.6s ease;
+}
+
+/* --- Variant: Fade from Right --------------------------------------------- */
+.fade-in-right {
+  opacity: 0;
+  transform: translateX(20px);
+  transition:
+    opacity 0.6s ease,
+    transform 0.6s ease;
+}
+
+/* --- Visible state (applied by IntersectionObserver) ---------------------- */
+.fade-in--visible,
+.fade-in--visible.fade-in,
+.fade-in--visible.fade-in-up,
+.fade-in--visible.fade-in-left,
+.fade-in--visible.fade-in-right {
+  opacity: 1;
+  transform: translate(0, 0);
+}
+
+/* --- Staggered Delays ----------------------------------------------------- */
+/* Using nth-child for cards within grid containers */
+.fade-in:nth-child(1) { transition-delay: 0s; }
+.fade-in:nth-child(2) { transition-delay: 0.1s; }
+.fade-in:nth-child(3) { transition-delay: 0.2s; }
+.fade-in:nth-child(4) { transition-delay: 0.3s; }
+.fade-in:nth-child(5) { transition-delay: 0.4s; }
+.fade-in:nth-child(6) { transition-delay: 0.5s; }
+
+/* Data-attribute based delays for fine-grained control */
+[data-delay="100"] { transition-delay: 0.1s; }
+[data-delay="200"] { transition-delay: 0.2s; }
+[data-delay="300"] { transition-delay: 0.3s; }
+[data-delay="400"] { transition-delay: 0.4s; }
+[data-delay="500"] { transition-delay: 0.5s; }
+[data-delay="600"] { transition-delay: 0.6s; }
