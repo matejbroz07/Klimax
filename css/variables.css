@@ -81,6 +81,24 @@
   /* --- Nav Height --------------------------------------------------------- */
   --nav-height: 100px;
   --nav-height-scrolled: 70px;
+
+  /* --- Liquid Glass Design Tokens ---------------------------------------- */
+  --glass-bg:            rgba(255, 255, 255, 0.04);
+  --glass-bg-strong:     rgba(255, 255, 255, 0.07);
+  --glass-bg-accent:     rgba(0, 179, 172, 0.06);
+  --glass-bg-klimax:     rgba(26, 147, 210, 0.06);
+  --glass-border:        rgba(255, 255, 255, 0.08);
+  --glass-border-strong: rgba(255, 255, 255, 0.14);
+  --glass-border-accent: rgba(0, 179, 172, 0.15);
+  --glass-glow:          inset 0 1px 0 0 rgba(255, 255, 255, 0.06);
+  --glass-glow-strong:   inset 0 1px 0 0 rgba(255, 255, 255, 0.12);
+  --glass-glow-edge:     inset 0 0 30px rgba(255, 255, 255, 0.02);
+  --glass-blur:          20px;
+  --glass-blur-heavy:    40px;
+  --glass-shadow:        0 8px 32px rgba(0, 0, 0, 0.25), 0 2px 8px rgba(0, 0, 0, 0.15);
+  --glass-shadow-lg:     0 16px 48px rgba(0, 0, 0, 0.3), 0 4px 12px rgba(0, 0, 0, 0.2);
+  --glass-shadow-float:  0 20px 60px rgba(0, 0, 0, 0.35);
+  --glass-refraction:    linear-gradient(135deg, rgba(255,255,255,0.08) 0%, transparent 40%, transparent 60%, rgba(255,255,255,0.04) 100%);
 }
 
 

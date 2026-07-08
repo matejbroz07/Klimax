@@ -29,10 +29,13 @@
 
 /* Scrolled state – frosted glass */
 .nav--scrolled {
-  background: rgba(18, 20, 24, 0.75);
-  -webkit-backdrop-filter: blur(24px) saturate(1.5);
-  backdrop-filter: blur(24px) saturate(1.5);
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+  background: rgba(18, 20, 24, 0.65);
+  -webkit-backdrop-filter: blur(var(--glass-blur-heavy)) saturate(1.6);
+  backdrop-filter: blur(var(--glass-blur-heavy)) saturate(1.6);
+  border-bottom: 1px solid var(--glass-border);
+  box-shadow:
+    var(--glass-glow),
+    0 10px 40px rgba(0, 0, 0, 0.3);
 }
 
 /* --- Nav Inner ------------------------------------------------------------- */
@@ -313,6 +316,35 @@
   box-shadow: 0 0 15px rgba(0, 179, 172, 0.2);
 }
 
+/* --- Glass: Frosted glass button ------------------------------------------ */
+.btn--glass {
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+}
+
+.btn--glass.btn--primary {
+  background-color: rgba(26, 147, 210, 0.75);
+  border: 1px solid rgba(26, 147, 210, 0.3);
+  box-shadow: var(--glass-glow), var(--glass-shadow);
+}
+
+.btn--glass.btn--primary:hover {
+  background-color: rgba(26, 147, 210, 0.9);
+  box-shadow: var(--glass-glow-strong), 0 4px 20px rgba(26, 147, 210, 0.3);
+}
+
+.btn--glass.btn--secondary {
+  background-color: var(--glass-bg-strong);
+  border: 1px solid var(--glass-border-strong);
+  box-shadow: var(--glass-glow);
+}
+
+.btn--glass.btn--secondary:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
+  box-shadow: var(--glass-glow-strong);
+}
+
 
 /* ==========================================================================
    3. TRUST BAR (.trust-bar)
@@ -418,6 +450,29 @@
   flex-direction: column;
   position: relative;
   z-index: 2;
+  background: var(--glass-bg);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.2);
+  backdrop-filter: blur(var(--glass-blur)) saturate(1.2);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-xl);
+  padding: 2.5rem;
+  box-shadow: var(--glass-glow), var(--glass-glow-edge), var(--glass-shadow);
+  transition: box-shadow var(--transition-base), border-color var(--transition-base);
+}
+
+.z-row__content:hover {
+  border-color: var(--glass-border-strong);
+  box-shadow: var(--glass-glow-strong), var(--glass-glow-edge), var(--glass-shadow-lg);
+}
+
+/* Refraction overlay on z-row content */
+.z-row__content::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: var(--glass-refraction);
+  pointer-events: none;
 }
 
 .z-row__label {
@@ -471,12 +526,30 @@
    Featured structural layout for Hisense
    ========================================================================== */
 
+/* Glass panel for Hisense hero showcase */
 .brands-hero {
   display: grid;
   grid-template-columns: 1fr;
   gap: 3rem;
   align-items: center;
   margin-top: 2rem;
+  background: var(--glass-bg);
+  -webkit-backdrop-filter: blur(16px) saturate(1.2);
+  backdrop-filter: blur(16px) saturate(1.2);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-xl);
+  padding: 3rem;
+  box-shadow: var(--glass-glow), var(--glass-glow-edge), var(--glass-shadow);
+  position: relative;
+}
+
+.brands-hero::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: var(--glass-refraction);
+  pointer-events: none;
 }
 
 @media (min-width: 900px) {
@@ -570,7 +643,9 @@
 }
 
 .brand-row:hover {
-  background-color: rgba(255, 255, 255, 0.015);
+  background-color: var(--glass-bg);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
 }
 
 .brand-row__logo {
@@ -691,12 +766,15 @@
   display: flex;
   align-items: flex-end;
   background: var(--bg-primary);
-  transition: transform var(--transition-base);
-  box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+  transition: transform var(--transition-base), box-shadow var(--transition-base);
+  box-shadow: var(--glass-shadow);
+  border: 1px solid var(--glass-border);
 }
 
 .service-card:hover {
   transform: translateY(-5px);
+  box-shadow: var(--glass-shadow-lg);
+  border-color: var(--glass-border-strong);
 }
 
 .service-card__bg {
@@ -807,6 +885,13 @@
   position: relative;
   z-index: var(--z-base);
   max-width: 700px;
+  background: var(--glass-bg);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.2);
+  backdrop-filter: blur(var(--glass-blur)) saturate(1.2);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-xl);
+  padding: 2.5rem;
+  box-shadow: var(--glass-glow), var(--glass-glow-edge), var(--glass-shadow);
 }
 
 .kore-teaser__content h2 {
@@ -863,13 +948,23 @@
 
 .cta-section {
   position: relative;
-  background-color: var(--accent-klimax);
+  background: linear-gradient(135deg, rgba(26, 147, 210, 0.9) 0%, rgba(21, 128, 188, 0.85) 100%);
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  backdrop-filter: blur(var(--glass-blur));
   text-align: center;
   padding: 5rem 0;
 }
+
 .cta-section__content {
   max-width: 650px;
   margin: 0 auto;
+  background: rgba(255, 255, 255, 0.06);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: var(--radius-xl);
+  padding: 3rem;
+  box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.1), var(--glass-shadow);
 }
 
 .cta-section__content h2 {
@@ -901,8 +996,20 @@
 
 .footer {
   background-color: var(--bg-primary);
-  border-top: 1px solid var(--border-color);
+  border-top: 1px solid var(--glass-border);
   padding: 3rem 0 1.5rem;
+  position: relative;
+}
+
+.footer::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent 0%, var(--accent-klimax) 50%, transparent 100%);
+  opacity: 0.3;
 }
 
 .footer__grid {

@@ -1,7 +1,7 @@
 /* ==========================================================================
    KLIMAX Teplice – Page-Specific Styles
    --------------------------------------------------------------------------
-   Premium split-hero layout with photography, SVG wave separator,
+   Premium split-hero layout with photography, liquid glass layers,
    clean typography-driven design. No geometric grids, no pulsing dots.
    ========================================================================== */
 
@@ -131,25 +131,70 @@
 }
 
 /* ==========================================================================
-   2. WAVE SEPARATOR
+   2. HERO WAVE — Liquid Glass (original wave shape, frosted glass effect)
    ========================================================================== */
 
+/* Wave container — same sizing as original */
 .hero__wave {
   position: absolute;
   bottom: 0;
   left: 0;
   width: 100%;
-  max-width: 1200px; /* Locks maximum horizontal stretching */
+  max-width: 1200px;
   height: 100%;
-  max-height: 800px; /* Locks maximum vertical stretching */
+  max-height: 800px;
   z-index: 1;
   pointer-events: none;
 }
 
+/* SVG sits on top for decorative edge strokes */
 .hero__wave svg {
+  position: absolute;
+  inset: 0;
   display: block;
   width: 100%;
   height: 100%;
+  z-index: 3;
+}
+
+/* Glass layers: positioned to fill the wave container */
+.hero__wave-glass {
+  position: absolute;
+  inset: 0;
+}
+
+/* Back glass: Teal accent — uses original teal wave curve */
+.hero__wave-glass--back {
+  clip-path: url(#wave-clip-back);
+  background: rgba(0, 179, 172, 0.10);
+  -webkit-backdrop-filter: blur(14px) saturate(1.3);
+  backdrop-filter: blur(14px) saturate(1.3);
+  box-shadow:
+    var(--glass-glow),
+    0 0 60px rgba(0, 179, 172, 0.06);
+  z-index: 1;
+}
+
+/* Front glass: Dark — uses original dark wave curve */
+.hero__wave-glass--front {
+  clip-path: url(#wave-clip-front);
+  background: rgba(18, 20, 24, 0.80);
+  -webkit-backdrop-filter: blur(var(--glass-blur-heavy)) saturate(1.5);
+  backdrop-filter: blur(var(--glass-blur-heavy)) saturate(1.5);
+  box-shadow:
+    var(--glass-glow-strong),
+    var(--glass-glow-edge);
+  z-index: 2;
+}
+
+/* Refraction highlight on front glass via pseudo-element */
+.hero__wave-glass--front::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  clip-path: inherit;
+  background: var(--glass-refraction);
+  pointer-events: none;
 }
 
 /* ==========================================================================
@@ -280,8 +325,12 @@
   width: 100%;
   height: auto;
   border-radius: 16px 0 0 16px;
-  box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+  box-shadow:
+    var(--glass-shadow-lg),
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.06);
   display: block;
+  border: 1px solid var(--glass-border);
+  border-right: none;
 }
 
 /* Desktop: side-by-side layout */
@@ -462,14 +511,19 @@
 }
 
 /* ==========================================================================
-   13. TRUSTED COMPANIES CAROUSEL
+   13. TRUSTED COMPANIES CAROUSEL – Glass Track
    ========================================================================== */
 
 .trusted-carousel {
+  position: relative;
   padding: 4rem 0;
   background-color: var(--bg-primary);
-  border-bottom: 1px solid var(--border-color);
+  border-top: 1px solid var(--glass-border);
+  border-bottom: 1px solid var(--glass-border);
   overflow: hidden;
+  box-shadow:
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.04),
+    inset 0 -1px 0 0 rgba(255, 255, 255, 0.04);
 }
 
 .trusted-carousel__inner {
@@ -530,21 +584,47 @@
 }
 
 .client-card {
+  position: relative;
   flex: 0 0 300px; /* Fixed width for each carousel item */
   scroll-snap-align: start;
-  background-color: var(--bg-elevated);
+  background: var(--glass-bg-strong);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.2);
+  backdrop-filter: blur(var(--glass-blur)) saturate(1.2);
   border-radius: var(--radius-lg);
   overflow: hidden;
-  border: 1px solid var(--border-color);
-  transition: transform var(--transition-base), box-shadow var(--transition-base), border-color var(--transition-base);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-glow), var(--glass-shadow);
+  transition:
+    transform var(--transition-base),
+    box-shadow var(--transition-base),
+    border-color var(--transition-base),
+    background var(--transition-base);
   display: flex;
   flex-direction: column;
 }
 
+/* Refraction overlay on client cards */
+.client-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--glass-refraction);
+  pointer-events: none;
+  z-index: 1;
+  border-radius: var(--radius-lg);
+  opacity: 0.6;
+  transition: opacity var(--transition-base);
+}
+
 .client-card:hover {
   transform: translateY(-5px);
-  box-shadow: var(--shadow-md);
-  border-color: var(--border-color-hover);
+  background: var(--glass-bg-strong);
+  box-shadow: var(--glass-glow-strong), var(--glass-shadow-lg);
+  border-color: var(--glass-border-strong);
+}
+
+.client-card:hover::after {
+  opacity: 1;
 }
 
 .client-card__image-wrapper {

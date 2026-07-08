@@ -63,7 +63,35 @@
          HERO SECTION
          ============================================ -->
     <section class="hero" id="hero">
-        <!-- Left: Text Content -->
+        <!-- Hero Image (Fullscreen Background) -->
+        <div class="hero__image">
+            <img src="assets/images/hero-room-clean.png" alt="Moderní interiér s klimatizací Hisense" width="960" height="960" loading="eager">
+        </div>
+
+        <!-- Wave as Liquid Glass (original wave shapes, glass effect) -->
+        <div class="hero__wave" aria-hidden="true">
+            <!-- SVG: defines clip-path shapes + decorative edge strokes -->
+            <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+                <defs>
+                    <!-- Clip paths using the ORIGINAL wave curves -->
+                    <clipPath id="wave-clip-back" clipPathUnits="objectBoundingBox">
+                        <path d="M0 0.01 C 0.5 0.4, 0.6 1, 0.95 1 L 0 1 Z"/>
+                    </clipPath>
+                    <clipPath id="wave-clip-front" clipPathUnits="objectBoundingBox">
+                        <path d="M0 0.25 C 0.55 0.42, 0.58 1, 0.9 1 L 0 1 Z"/>
+                    </clipPath>
+                </defs>
+                <!-- Decorative glass edge strokes along original wave curves -->
+                <path d="M0 1 C 50 40, 60 100, 95 100" fill="none" stroke="rgba(0, 179, 172, 0.35)" stroke-width="0.4"/>
+                <path d="M0 25 C 55 42, 58 100, 90 100" fill="none" stroke="rgba(255, 255, 255, 0.12)" stroke-width="0.3"/>
+            </svg>
+            <!-- Glass div: Teal wave (back, larger) -->
+            <div class="hero__wave-glass hero__wave-glass--back"></div>
+            <!-- Glass div: Dark wave (front, smaller) -->
+            <div class="hero__wave-glass hero__wave-glass--front"></div>
+        </div>
+
+        <!-- Text Content (on top of glass waves) -->
         <div class="hero__content">
             <div class="hero__content-inner">
                 <!-- Hisense logo -->
@@ -80,25 +108,10 @@
                 </p>
 
                 <div class="hero__actions fade-in">
-                    <a href="kontakt.html" class="btn btn--primary" id="hero-cta-contact">Kontaktujte nás</a>
-                    <a href="hisense.html" class="btn btn--secondary" id="hero-cta-hisense">Proč Hisense?</a>
+                    <a href="kontakt.html" class="btn btn--primary btn--glass" id="hero-cta-contact">Kontaktujte nás</a>
+                    <a href="hisense.html" class="btn btn--secondary btn--glass" id="hero-cta-hisense">Proč Hisense?</a>
                 </div>
             </div>
-        </div>
-
-        <!-- Right: Hero Image -->
-        <div class="hero__image">
-            <img src="assets/images/hero-room-clean.png" alt="Moderní interiér s klimatizací Hisense" width="960" height="960" loading="eager">
-        </div>
-
-        <!-- Large Background Wave (Dark with Teal Accent) -->
-        <div class="hero__wave" aria-hidden="true">
-            <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
-                <!-- Teal accent -->
-                <path d="M0 1 C 50 40, 60 100, 95 100 L 0 100 Z" fill="#00B3AC" opacity="0.8"/>
-                <!-- Dark background for text readability -->
-                <path d="M0 25 C 55 42, 58 100, 90 100 L 0 100 Z" fill="#121418"/>
-            </svg>
         </div>
     </section>
 
@@ -601,7 +614,7 @@
                 <!-- Column 1: About -->
                 <div class="footer__col">
                     <a href="/" class="footer__logo" aria-label="KLIMAX">
-                        <img src="assets/images/klimax.webp" alt="KLIMAX Logo" class="footer__logo-img" width="140" height="40">
+                        <img src="assets/images/Klimax.webp" alt="KLIMAX Logo" class="footer__logo-img" width="140" height="40">
                     </a>
                     <p class="footer__about">
                         Autorizovaný dovozce Hisense pro ČR a SR.
