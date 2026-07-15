@@ -8,6 +8,14 @@
     <meta name="robots" content="index, follow">
     <meta name="author" content="KLIMAX Teplice s.r.o.">
 
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="/assets/favicon/favicon-96x96.png" sizes="96x96" />
+    <link rel="icon" type="image/svg+xml" href="/assets/favicon/favicon.svg" />
+    <link rel="shortcut icon" href="/assets/favicon/favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/favicon/apple-touch-icon.png" />
+    <meta name="apple-mobile-web-app-title" content="Klimax" />
+    <link rel="manifest" href="/assets/favicon/site.webmanifest" />
+
     <!-- Open Graph -->
     <meta property="og:title" content="KLIMAX Teplice – Autorizovaný dovozce Hisense pro ČR a SR">
     <meta property="og:description" content="Přímý import klimatizací a tepelných čerpadel. 30 let na trhu. Prodáváme, instalujeme, servisujeme.">
@@ -29,6 +37,53 @@
 <body>
 
     <!-- ============================================
+         LIQUID GLASS SVG FILTERS
+         Applied via filter: url(#id) on clip-path elements.
+         Combines drop-shadows (3D depth) with specular glass sheen.
+         ============================================ -->
+    <svg xmlns="http://www.w3.org/2000/svg" style="position:absolute;width:0;height:0;overflow:hidden;" aria-hidden="true">
+        <defs>
+            <!-- ===== BACK WAVE FILTER (teal glass + soft shadow) ===== -->
+            <filter id="glass-back" x="-30%" y="-30%" width="160%" height="160%" color-interpolation-filters="sRGB">
+                <!-- Soft 3D depth shadows -->
+                <feDropShadow dx="0" dy="10" stdDeviation="10" flood-color="#000" flood-opacity="0.25" result="shadow1"/>
+                <feDropShadow dx="0" dy="25" stdDeviation="25" flood-color="#000" flood-opacity="0.15"/>
+            </filter>
+
+            <!-- ===== FRONT WAVE FILTER (dark glass + hard layered shadows + specular) ===== -->
+            <filter id="glass-front" x="-30%" y="-30%" width="160%" height="160%" color-interpolation-filters="sRGB">
+                <!-- Generate glass surface texture -->
+                <feTurbulence type="fractalNoise" baseFrequency="0.012 0.006" numOctaves="3" seed="7" result="noise"/>
+                
+                <!-- Specular light sheen on glass surface -->
+                <feSpecularLighting in="noise" surfaceScale="2.5" specularConstant="0.5" specularExponent="35" lighting-color="#ffffff" result="specular">
+                    <fePointLight x="250" y="50" z="200"/>
+                </feSpecularLighting>
+                <!-- Mask specular to element shape -->
+                <feComposite in="specular" in2="SourceGraphic" operator="in" result="specMasked"/>
+                <!-- Blend specular onto original (screen mode = additive light) -->
+                <feBlend in="SourceGraphic" in2="specMasked" mode="screen" result="glassed"/>
+                
+                <!-- Layered 3D shadows: hard close + medium + soft far -->
+                <feDropShadow in="glassed" dx="0" dy="3" stdDeviation="4" flood-color="#000" flood-opacity="0.45"/>
+                <feDropShadow dx="0" dy="12" stdDeviation="12" flood-color="#000" flood-opacity="0.3"/>
+                <feDropShadow dx="0" dy="35" stdDeviation="30" flood-color="#000" flood-opacity="0.2"/>
+            </filter>
+
+            <!-- ===== NAVBAR FILTER (subtle glass + shadow) ===== -->
+            <filter id="glass-navbar" x="-10%" y="-30%" width="120%" height="160%" color-interpolation-filters="sRGB">
+                <feTurbulence type="fractalNoise" baseFrequency="0.025 0.04" numOctaves="2" seed="42" result="noise"/>
+                <feSpecularLighting in="noise" surfaceScale="1.5" specularConstant="0.3" specularExponent="25" lighting-color="#ffffff" result="specular">
+                    <fePointLight x="500" y="-10" z="150"/>
+                </feSpecularLighting>
+                <feComposite in="specular" in2="SourceGraphic" operator="in" result="specMasked"/>
+                <feBlend in="SourceGraphic" in2="specMasked" mode="screen" result="glassed"/>
+                <feDropShadow in="glassed" dx="0" dy="6" stdDeviation="10" flood-color="#000" flood-opacity="0.25"/>
+            </filter>
+        </defs>
+    </svg>
+
+    <!-- ============================================
          NAVIGATION
          ============================================ -->
     <nav class="nav" id="main-nav" role="navigation" aria-label="Hlavní navigace">
@@ -47,7 +102,7 @@
                 <li class="nav__menu-item"><a href="reference.html" class="nav__menu-link">Reference</a></li>
                 <li class="nav__menu-item"><a href="kore.html" class="nav__menu-link">KORE</a></li>
                 <li class="nav__menu-item"><a href="pro-partnery.html" class="nav__menu-link">Pro partnery</a></li>
-                <li class="nav__menu-item"><a href="kontakt.html" class="btn btn--primary nav__cta" id="nav-cta">Poptávka</a></li>
+                <li class="nav__menu-item"><a href="kontakt.html" class="btn btn--primary btn--pill nav__cta" id="nav-cta">Poptávka</a></li>
             </ul>
 
             <!-- Mobile Toggle -->
@@ -71,9 +126,8 @@
         <!-- Wave as Liquid Glass (original wave shapes, glass effect) -->
         <div class="hero__wave" aria-hidden="true">
             <!-- SVG: defines clip-path shapes + decorative edge strokes -->
-            <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+            <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" style="position:absolute;width:0;height:0;">
                 <defs>
-                    <!-- Clip paths using the ORIGINAL wave curves -->
                     <clipPath id="wave-clip-back" clipPathUnits="objectBoundingBox">
                         <path d="M0 0.01 C 0.5 0.4, 0.6 1, 0.95 1 L 0 1 Z"/>
                     </clipPath>
@@ -81,9 +135,6 @@
                         <path d="M0 0.25 C 0.55 0.42, 0.58 1, 0.9 1 L 0 1 Z"/>
                     </clipPath>
                 </defs>
-                <!-- Decorative glass edge strokes along original wave curves -->
-                <path d="M0 1 C 50 40, 60 100, 95 100" fill="none" stroke="rgba(0, 179, 172, 0.35)" stroke-width="0.4"/>
-                <path d="M0 25 C 55 42, 58 100, 90 100" fill="none" stroke="rgba(255, 255, 255, 0.12)" stroke-width="0.3"/>
             </svg>
             <!-- Glass div: Teal wave (back, larger) -->
             <div class="hero__wave-glass hero__wave-glass--back"></div>
@@ -121,20 +172,58 @@
     <section class="trusted-carousel">
         <div class="trusted-carousel__inner">
             <div class="trusted-carousel__track">
-                <!-- Logos duplicated for infinite effect -->
-                <img src="https://placehold.co/200x80/e6e8eb/8B92A0?text=Firma+1" alt="Logo 1">
-                <img src="https://placehold.co/200x80/e6e8eb/8B92A0?text=Firma+2" alt="Logo 2">
-                <img src="https://placehold.co/200x80/e6e8eb/8B92A0?text=Firma+3" alt="Logo 3">
-                <img src="https://placehold.co/200x80/e6e8eb/8B92A0?text=Firma+4" alt="Logo 4">
-                <img src="https://placehold.co/200x80/e6e8eb/8B92A0?text=Firma+5" alt="Logo 5">
-                <img src="https://placehold.co/200x80/e6e8eb/8B92A0?text=Firma+6" alt="Logo 6">
-                <!-- Duplicate set for seamless loop -->
-                <img src="https://placehold.co/200x80/e6e8eb/8B92A0?text=Firma+1" alt="Logo 1">
-                <img src="https://placehold.co/200x80/e6e8eb/8B92A0?text=Firma+2" alt="Logo 2">
-                <img src="https://placehold.co/200x80/e6e8eb/8B92A0?text=Firma+3" alt="Logo 3">
-                <img src="https://placehold.co/200x80/e6e8eb/8B92A0?text=Firma+4" alt="Logo 4">
-                <img src="https://placehold.co/200x80/e6e8eb/8B92A0?text=Firma+5" alt="Logo 5">
-                <img src="https://placehold.co/200x80/e6e8eb/8B92A0?text=Firma+6" alt="Logo 6">
+                <!-- Group 1 (original) -->
+                <div class="trusted-carousel__group">
+                    <img src="assets/brands/aaa.webp" alt="AAA Auto">
+                    <img src="assets/brands/agc.webp" alt="AGC">
+                    <img src="assets/brands/army.webp" alt="Armáda ČR">
+                    <img src="assets/brands/bmw.webp" alt="BMW">
+                    <img src="assets/brands/cez.webp" alt="ČEZ">
+                    <img src="assets/brands/hospital.webp" alt="Nemocnice">
+                    <img src="assets/brands/mercedes.webp" alt="Mercedes">
+                    <img src="assets/brands/mondi.webp" alt="Mondi">
+                    <img src="assets/brands/omv.webp" alt="OMV">
+                    <img src="assets/brands/pilsner.webp" alt="Pilsner Urquell">
+                </div>
+                <!-- Group 2 (duplicate) -->
+                <div class="trusted-carousel__group" aria-hidden="true">
+                    <img src="assets/brands/aaa.webp" alt="AAA Auto">
+                    <img src="assets/brands/agc.webp" alt="AGC">
+                    <img src="assets/brands/army.webp" alt="Armáda ČR">
+                    <img src="assets/brands/bmw.webp" alt="BMW">
+                    <img src="assets/brands/cez.webp" alt="ČEZ">
+                    <img src="assets/brands/hospital.webp" alt="Nemocnice">
+                    <img src="assets/brands/mercedes.webp" alt="Mercedes">
+                    <img src="assets/brands/mondi.webp" alt="Mondi">
+                    <img src="assets/brands/omv.webp" alt="OMV">
+                    <img src="assets/brands/pilsner.webp" alt="Pilsner Urquell">
+                </div>
+                <!-- Group 3 (duplicate) -->
+                <div class="trusted-carousel__group" aria-hidden="true">
+                    <img src="assets/brands/aaa.webp" alt="AAA Auto">
+                    <img src="assets/brands/agc.webp" alt="AGC">
+                    <img src="assets/brands/army.webp" alt="Armáda ČR">
+                    <img src="assets/brands/bmw.webp" alt="BMW">
+                    <img src="assets/brands/cez.webp" alt="ČEZ">
+                    <img src="assets/brands/hospital.webp" alt="Nemocnice">
+                    <img src="assets/brands/mercedes.webp" alt="Mercedes">
+                    <img src="assets/brands/mondi.webp" alt="Mondi">
+                    <img src="assets/brands/omv.webp" alt="OMV">
+                    <img src="assets/brands/pilsner.webp" alt="Pilsner Urquell">
+                </div>
+                <!-- Group 4 (duplicate) -->
+                <div class="trusted-carousel__group" aria-hidden="true">
+                    <img src="assets/brands/aaa.webp" alt="AAA Auto">
+                    <img src="assets/brands/agc.webp" alt="AGC">
+                    <img src="assets/brands/army.webp" alt="Armáda ČR">
+                    <img src="assets/brands/bmw.webp" alt="BMW">
+                    <img src="assets/brands/cez.webp" alt="ČEZ">
+                    <img src="assets/brands/hospital.webp" alt="Nemocnice">
+                    <img src="assets/brands/mercedes.webp" alt="Mercedes">
+                    <img src="assets/brands/mondi.webp" alt="Mondi">
+                    <img src="assets/brands/omv.webp" alt="OMV">
+                    <img src="assets/brands/pilsner.webp" alt="Pilsner Urquell">
+                </div>
             </div>
         </div>
     </section>
@@ -205,6 +294,13 @@
                 </div>
             </div>
         </div>
+
+        <!-- Smooth Transition to Brands -->
+        <div class="pillars-transition" aria-hidden="true">
+            <svg viewBox="0 0 1440 120" preserveAspectRatio="none">
+                <path d="M0,0 C300,120 1140,120 1440,0 L1440,120 L0,120 Z" fill="var(--bg-primary)"/>
+            </svg>
+        </div>
     </section>
 
     <!-- ============================================
@@ -222,7 +318,7 @@
                 <div class="brands-hero__content">
                     <div class="brands-hero__badge">Výhradní zastoupení pro ČR</div>
                     <div class="brands-hero__logo">
-                        <img src="./assets/images/Hisense-HVAC.webp" alt="Hisense Logo" style="height: 50px; width: auto; display: block;">
+                        <img src="./assets/images/Hisense-HVAC.webp" alt="Hisense Logo" style="width: auto; display: block;">
                     </div>
                     <p class="brands-hero__desc">
                         KLIMAX Teplice je autorizovaným dovozcem Hisense. Přímý import z výroby v Číně. Kompletní portfolio pro profesionály i domácnosti.
@@ -455,13 +551,13 @@
                 <!-- 1. OMV Česká republika -->
                 <article class="client-card">
                     <div class="client-card__image-wrapper">
-                        <img src="https://placehold.co/600x400/121418/00B3AC?text=OMV+ČR" alt="OMV Česká republika" class="client-card__image" loading="lazy">
+                        <img src="./assets/realisation/omv.jpg" alt="OMV Česká republika" class="client-card__image" loading="lazy">
                     </div>
                     <div class="client-card__content">
                         <h3 class="client-card__title">OMV Česká republika</h3>
                         <div class="client-card__brand">
                             <span class="client-card__brand-label">Využívá:</span>
-                            <img src="./assets/images/Hisense.webp" alt="Hisense" class="client-card__brand-logo">
+                            <img src="./assets/images/Hokkaido.webp" alt="Hisense" class="client-card__brand-logo">
                         </div>
                     </div>
                 </article>
@@ -469,7 +565,7 @@
                 <!-- 2. Hotel JALTA - Praha -->
                 <article class="client-card">
                     <div class="client-card__image-wrapper">
-                        <img src="https://placehold.co/600x400/121418/00B3AC?text=Hotel+JALTA" alt="Hotel JALTA - Praha" class="client-card__image" loading="lazy">
+                        <img src="./assets/realisation/jalta.png" alt="Hotel JALTA - Praha" class="client-card__image" loading="lazy">
                     </div>
                     <div class="client-card__content">
                         <h3 class="client-card__title">Hotel JALTA - Praha</h3>
@@ -483,13 +579,13 @@
                 <!-- 3. AGC Glass Europe -->
                 <article class="client-card">
                     <div class="client-card__image-wrapper">
-                        <img src="https://placehold.co/600x400/121418/00B3AC?text=AGC+Glass" alt="AGC Glass Europe" class="client-card__image" loading="lazy">
+                        <img src="./assets/realisation/agc.jpg" alt="AGC Glass Europe" class="client-card__image" loading="lazy">
                     </div>
                     <div class="client-card__content">
                         <h3 class="client-card__title">AGC Glass Europe</h3>
                         <div class="client-card__brand">
                             <span class="client-card__brand-label">Využívá:</span>
-                            <img src="./assets/images/Hisense.webp" alt="Hisense" class="client-card__brand-logo">
+                            <img src="./assets/images/Hokkaido.webp" alt="Hisense" class="client-card__brand-logo">
                         </div>
                     </div>
                 </article>
@@ -497,7 +593,7 @@
                 <!-- 4. MONDI Štětí -->
                 <article class="client-card">
                     <div class="client-card__image-wrapper">
-                        <img src="https://placehold.co/600x400/121418/00B3AC?text=MONDI+Štětí" alt="MONDI Štětí" class="client-card__image" loading="lazy">
+                        <img src="./assets/realisation/mondi.jpg" alt="MONDI Štětí" class="client-card__image" loading="lazy">
                     </div>
                     <div class="client-card__content">
                         <h3 class="client-card__title">MONDI Štětí</h3>
@@ -511,7 +607,7 @@
                 <!-- 5. AAA auto -->
                 <article class="client-card">
                     <div class="client-card__image-wrapper">
-                        <img src="https://placehold.co/600x400/121418/00B3AC?text=AAA+auto" alt="AAA auto" class="client-card__image" loading="lazy">
+                        <img src="./assets/realisation/aaa.png" alt="AAA auto" class="client-card__image" loading="lazy">
                     </div>
                     <div class="client-card__content">
                         <h3 class="client-card__title">AAA auto</h3>
@@ -525,7 +621,7 @@
                 <!-- 6. AFFIDEA Praha -->
                 <article class="client-card">
                     <div class="client-card__image-wrapper">
-                        <img src="https://placehold.co/600x400/121418/00B3AC?text=AFFIDEA+Praha" alt="AFFIDEA Praha" class="client-card__image" loading="lazy">
+                        <img src="./assets/realisation/affidea.png" alt="AFFIDEA Praha" class="client-card__image" loading="lazy">
                     </div>
                     <div class="client-card__content">
                         <h3 class="client-card__title">AFFIDEA Praha</h3>
@@ -535,7 +631,7 @@
                 <!-- 7. Pension U Kozičky -->
                 <article class="client-card">
                     <div class="client-card__image-wrapper">
-                        <img src="https://placehold.co/600x400/121418/00B3AC?text=Pension+U+Kozičky" alt="Pension U Kozičky" class="client-card__image" loading="lazy">
+                        <img src="./assets/realisation/pension-u-kozicky.png" alt="Pension U Kozičky" class="client-card__image" loading="lazy">
                     </div>
                     <div class="client-card__content">
                         <h3 class="client-card__title">Pension U Kozičky</h3>
@@ -545,7 +641,7 @@
                 <!-- 8. Plaza ALTA Hotel -->
                 <article class="client-card">
                     <div class="client-card__image-wrapper">
-                        <img src="https://placehold.co/600x400/121418/00B3AC?text=Plaza+ALTA+Hotel" alt="Plaza ALTA Hotel" class="client-card__image" loading="lazy">
+                        <img src="./assets/realisation/alta.png" alt="Plaza ALTA Hotel" class="client-card__image" loading="lazy">
                     </div>
                     <div class="client-card__content">
                         <h3 class="client-card__title">Plaza ALTA Hotel</h3>
@@ -555,7 +651,7 @@
                 <!-- 9. PE Holding -->
                 <article class="client-card">
                     <div class="client-card__image-wrapper">
-                        <img src="https://placehold.co/600x400/121418/00B3AC?text=PE+Holding" alt="PE Holding" class="client-card__image" loading="lazy">
+                        <img src="./assets/realisation/pe-holding.jpg" alt="PE Holding" class="client-card__image" loading="lazy">
                     </div>
                     <div class="client-card__content">
                         <h3 class="client-card__title">PE Holding</h3>
@@ -565,7 +661,7 @@
                 <!-- 10. Hotel Giovanni Giacomo -->
                 <article class="client-card">
                     <div class="client-card__image-wrapper">
-                        <img src="https://placehold.co/600x400/121418/00B3AC?text=Hotel+Giovanni+Giacomo" alt="Hotel Giovanni Giacomo" class="client-card__image" loading="lazy">
+                        <img src="./assets/realisation/giovanni-giacomo.png" alt="Hotel Giovanni Giacomo" class="client-card__image" loading="lazy">
                     </div>
                     <div class="client-card__content">
                         <h3 class="client-card__title">Hotel Giovanni Giacomo</h3>
@@ -575,7 +671,7 @@
                 <!-- 11. Ústav živočišné fyziologie a genetiky AV ČR -->
                 <article class="client-card">
                     <div class="client-card__image-wrapper">
-                        <img src="https://placehold.co/600x400/121418/00B3AC?text=Ústav+živočišné+fyziologie" alt="Ústav živočišné fyziologie a genetiky AV ČR" class="client-card__image" loading="lazy">
+                        <img src="./assets/realisation/libechov.jpg" alt="Ústav živočišné fyziologie a genetiky AV ČR" class="client-card__image" loading="lazy">
                     </div>
                     <div class="client-card__content">
                         <h3 class="client-card__title">Ústav živočišné fyziologie a genetiky AV ČR</h3>
@@ -596,7 +692,7 @@
                 pro komerční objekt – ozvěte se. Odpovídáme do 24 hodin.
             </p>
             <div class="cta-section__actions">
-                <a href="kontakt.html" class="btn btn--white btn--lg" id="cta-contact">Kontaktujte nás</a>
+                <a href="kontakt.html" class="btn btn--white btn--lg btn--pill" id="cta-contact">Kontaktujte nás</a>
                 <a href="tel:+420417568023" class="btn btn--ghost-white" id="cta-phone">
                     <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M16.5 12.69v2.5a1.67 1.67 0 01-1.82 1.67A16.5 16.5 0 011.14 3.32 1.67 1.67 0 012.81 1.5h2.5a1.67 1.67 0 011.67 1.43 10.72 10.72 0 00.58 2.35 1.67 1.67 0 01-.37 1.76L5.84 8.39a13.33 13.33 0 005.77 5.77l1.35-1.35a1.67 1.67 0 011.76-.37 10.72 10.72 0 002.35.58 1.67 1.67 0 011.43 1.67z"/></svg>
                     +420 417 568 023
@@ -614,7 +710,7 @@
                 <!-- Column 1: About -->
                 <div class="footer__col">
                     <a href="/" class="footer__logo" aria-label="KLIMAX">
-                        <img src="assets/images/Klimax.webp" alt="KLIMAX Logo" class="footer__logo-img" width="140" height="40">
+                        <img src="assets/images/Klimax-white.webp" alt="KLIMAX Logo" class="footer__logo-img" width="140" height="40">
                     </a>
                     <p class="footer__about">
                         Autorizovaný dovozce Hisense pro ČR a SR.
@@ -650,18 +746,33 @@
                 <div class="footer__col">
                     <h4 class="footer__title">Kontakt</h4>
                     <div class="footer__contact">
-                        <div class="footer__contact-item">
-                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M14 6.67C14 11.33 8 15 8 15S2 11.33 2 6.67a6 6 0 1112 0z"/><circle cx="8" cy="6.67" r="2"/></svg>
-                            <span>Teplická 45, Košťany</span>
-                        </div>
-                        <div class="footer__contact-item">
-                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M2.67 2.67h10.66c.74 0 1.34.6 1.34 1.33v8c0 .73-.6 1.33-1.34 1.33H2.67c-.74 0-1.34-.6-1.34-1.33V4c0-.73.6-1.33 1.34-1.33z"/><path d="M14.67 4L8 8.67 1.33 4"/></svg>
-                            <a href="mailto:servis@klimax.cz" class="footer__link">servis@klimax.cz</a>
-                        </div>
-                        <div class="footer__contact-item">
-                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M14.67 11.28v2.22a1.48 1.48 0 01-1.62 1.48A14.67 14.67 0 011.02 2.95 1.48 1.48 0 012.5 1.33h2.22a1.48 1.48 0 011.48 1.28c.1.63.27 1.25.5 1.84a1.48 1.48 0 01-.33 1.57l-.94.94a11.85 11.85 0 005.13 5.13l.94-.94a1.48 1.48 0 011.57-.33c.6.23 1.21.4 1.84.5a1.48 1.48 0 011.28 1.5z"/></svg>
-                            <a href="tel:+420417568023" class="footer__link">+420 417 568 023</a>
-                        </div>
+                        <a href="https://maps.google.com/?q=Teplická+45,+Košťany" target="_blank" rel="noopener noreferrer" class="footer__contact-item">
+                            <div class="footer__contact-icon">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                            </div>
+                            <div class="footer__contact-text">
+                                <strong>Sídlo společnosti</strong>
+                                <span>Teplická 45, Košťany</span>
+                            </div>
+                        </a>
+                        <a href="mailto:servis@klimax.cz" class="footer__contact-item">
+                            <div class="footer__contact-icon">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                            </div>
+                            <div class="footer__contact-text">
+                                <strong>E-mail</strong>
+                                <span>servis@klimax.cz</span>
+                            </div>
+                        </a>
+                        <a href="tel:+420417568023" class="footer__contact-item">
+                            <div class="footer__contact-icon">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+                            </div>
+                            <div class="footer__contact-text">
+                                <strong>Telefon</strong>
+                                <span>+420 417 568 023</span>
+                            </div>
+                        </a>
                     </div>
                 </div>
             </div>

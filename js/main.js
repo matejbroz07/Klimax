@@ -291,4 +291,46 @@ document.addEventListener('DOMContentLoaded', () => {
   handleReducedMotion(prefersReducedMotion);
   // Listen for changes (user toggles setting while page is open)
   prefersReducedMotion.addEventListener('change', handleReducedMotion);
+
+  /* ============================================================
+   * 9. Drag to Scroll for Trusted Clients Grid
+   * ============================================================
+   */
+  const clientsGrid = document.querySelector('.trusted-clients__grid');
+  if (clientsGrid) {
+    let isDown = false;
+    let startX;
+    let scrollLeft;
+
+    clientsGrid.addEventListener('mousedown', (e) => {
+      isDown = true;
+      startX = e.pageX - clientsGrid.offsetLeft;
+      scrollLeft = clientsGrid.scrollLeft;
+      // Disable scroll snapping during drag for smoother experience
+      clientsGrid.style.scrollSnapType = 'none';
+      clientsGrid.style.scrollBehavior = 'auto';
+    });
+
+    clientsGrid.addEventListener('mouseleave', () => {
+      if (!isDown) return;
+      isDown = false;
+      clientsGrid.style.scrollSnapType = '';
+      clientsGrid.style.scrollBehavior = '';
+    });
+
+    clientsGrid.addEventListener('mouseup', () => {
+      if (!isDown) return;
+      isDown = false;
+      clientsGrid.style.scrollSnapType = '';
+      clientsGrid.style.scrollBehavior = '';
+    });
+
+    clientsGrid.addEventListener('mousemove', (e) => {
+      if (!isDown) return;
+      e.preventDefault();
+      const x = e.pageX - clientsGrid.offsetLeft;
+      const walk = (x - startX) * 2; // Scroll-fast modifier
+      clientsGrid.scrollLeft = scrollLeft - walk;
+    });
+  }
 });
