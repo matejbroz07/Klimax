@@ -292,7 +292,7 @@
   }
 
   .hero__image img {
-    content: url('./assets/images/mobile-hero.png');
+    content: url('/assets/images/mobile-hero.png');
     object-position: center bottom;
   }
 
