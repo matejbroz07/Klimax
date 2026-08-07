@@ -1,0 +1,752 @@
+/* ==========================================================================
+   HISENSE BRAND PAGE – Dedicated Styles
+   --------------------------------------------------------------------------
+   Premium standalone design for the Hisense subpage.
+   Uses design tokens from variables.css. Builds its own visual identity
+   around Hisense teal (#00B3AC) with cinematic layouts and purposeful motion.
+   ========================================================================== */
+
+
+/* ==========================================================================
+   1. HERO – Cinematic Fullscreen
+   ========================================================================== */
+
+.hs-hero {
+  position: relative;
+  height: 100vh;
+  height: 100dvh;
+  display: flex;
+  align-items: flex-end;
+  overflow: hidden;
+}
+
+.hs-hero__media {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.hs-hero__media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 40%;
+}
+
+/* Gradient overlay — dark bottom for text legibility, subtle top for nav */
+.hs-hero__media::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg,
+      rgba(10, 12, 16, 0.6) 0%,
+      rgba(10, 12, 16, 0.1) 30%,
+      rgba(10, 12, 16, 0.05) 50%,
+      rgba(10, 12, 16, 0.4) 75%,
+      rgba(10, 12, 16, 0.92) 100%
+    );
+  z-index: 1;
+}
+
+.hs-hero__content {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 clamp(1.5rem, 4vw, 3rem) clamp(4rem, 8vh, 7rem);
+}
+
+.hs-hero__logo {
+  margin-bottom: 1.5rem;
+}
+
+.hs-hero__logo img {
+  height: clamp(32px, 4vw, 52px);
+  width: auto;
+  filter: brightness(0) invert(1);
+  opacity: 0.9;
+}
+
+.hs-hero__title {
+  font-size: clamp(2.25rem, 5vw, 4.5rem);
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  color: var(--text-primary);
+  max-width: 700px;
+  margin-bottom: 1.25rem;
+}
+
+.hs-hero__subtitle {
+  font-size: clamp(1rem, 1.5vw, 1.2rem);
+  color: var(--text-secondary);
+  max-width: 520px;
+  line-height: 1.65;
+  margin-bottom: 2.5rem;
+}
+
+.hs-hero__actions {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+/* Scroll indicator */
+.hs-hero__scroll {
+  position: absolute;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2;
+  color: rgba(255, 255, 255, 0.85);
+  opacity: 1;
+  transition: opacity var(--transition-base);
+  animation: hs-arrow-bounce 2s ease-in-out infinite;
+}
+
+.hs-hero__scroll:hover {
+  opacity: 1;
+}
+
+@keyframes hs-arrow-bounce {
+  0%, 100% { transform: translateX(-50%) translateY(0); }
+  50%      { transform: translateX(-50%) translateY(6px); }
+}
+
+
+/* ==========================================================================
+   2. SHARED SECTION LAYOUT
+   ========================================================================== */
+
+.hs-section {
+  padding: clamp(4rem, 8vw, 7rem) clamp(1.5rem, 4vw, 3rem);
+}
+
+.hs-container {
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+.hs-section--dark {
+  background-color: var(--bg-secondary);
+}
+
+.hs-label {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent-hisense);
+  margin-bottom: 1rem;
+}
+
+.hs-section-title {
+  font-size: clamp(1.75rem, 3.5vw, 2.75rem);
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+  margin-bottom: 1rem;
+}
+
+.hs-section-subtitle {
+  font-size: clamp(1rem, 1.5vw, 1.15rem);
+  color: var(--text-secondary);
+  line-height: 1.7;
+  max-width: 600px;
+}
+
+
+/* ==========================================================================
+   3. BRAND INTRO
+   ========================================================================== */
+
+.hs-intro {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 3rem;
+  align-items: center;
+}
+
+@media (min-width: 768px) {
+  .hs-intro {
+    grid-template-columns: 1fr 1fr;
+    gap: clamp(3rem, 6vw, 6rem);
+  }
+}
+
+.hs-intro__text p {
+  margin-top: 1.5rem;
+  font-size: 1.05rem;
+  line-height: 1.75;
+  color: var(--text-secondary);
+}
+
+.hs-intro__stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+.hs-stat {
+  padding: 1.5rem;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  transition: border-color var(--transition-base), background var(--transition-base);
+}
+
+.hs-stat:hover {
+  border-color: rgba(0, 179, 172, 0.2);
+  background: var(--glass-bg-accent);
+}
+
+.hs-stat__value {
+  font-size: clamp(1.75rem, 3vw, 2.5rem);
+  font-weight: 800;
+  color: var(--accent-hisense);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+.hs-stat__label {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-top: 0.35rem;
+  line-height: 1.4;
+}
+
+/* Full-width stat spanning two columns */
+.hs-stat--wide {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+
+/* ==========================================================================
+   4. TECH SHOWCASE – Horizontal Scroll
+   ========================================================================== */
+
+.hs-tech {
+  overflow: hidden;
+}
+
+.hs-tech__track {
+  display: flex;
+  gap: 1.25rem;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 1rem;
+  scrollbar-width: none;
+  cursor: grab;
+}
+
+.hs-tech__track::-webkit-scrollbar {
+  display: none;
+}
+
+.hs-tech__track:active {
+  cursor: grabbing;
+}
+
+.hs-tech__card {
+  flex: 0 0 clamp(260px, 28vw, 320px);
+  scroll-snap-align: start;
+  padding: 2rem 1.75rem;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-xl);
+  transition:
+    border-color var(--transition-base),
+    transform var(--transition-smooth),
+    background var(--transition-base);
+}
+
+.hs-tech__card:hover {
+  border-color: rgba(0, 179, 172, 0.25);
+  transform: translateY(-4px);
+  background: var(--glass-bg-strong);
+}
+
+.hs-tech__icon {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 179, 172, 0.08);
+  border: 1px solid rgba(0, 179, 172, 0.15);
+  border-radius: var(--radius-md);
+  color: var(--accent-hisense);
+  margin-bottom: 1.25rem;
+}
+
+.hs-tech__card-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 0.5rem;
+}
+
+.hs-tech__card-text {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+/* Scroll hint indicator */
+.hs-tech__hint {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1.5rem;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  letter-spacing: 0.05em;
+}
+
+.hs-tech__hint svg {
+  animation: hs-nudge 2s ease-in-out infinite;
+}
+
+@keyframes hs-nudge {
+  0%, 100% { transform: translateX(0); }
+  50%      { transform: translateX(6px); }
+}
+
+@media (min-width: 1024px) {
+  .hs-tech__hint {
+    display: none;
+  }
+  .hs-tech__track {
+    overflow-x: visible;
+    flex-wrap: wrap;
+    gap: 1.25rem;
+  }
+  .hs-tech__card {
+    flex: 1 1 calc(25% - 1rem);
+    min-width: 0;
+    scroll-snap-align: none;
+  }
+}
+
+
+/* ==========================================================================
+   5. PRODUCT GRID
+   ========================================================================== */
+
+.hs-products__grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.25rem;
+}
+
+@media (min-width: 640px) {
+  .hs-products__grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .hs-products__grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.hs-product {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  transition:
+    border-color var(--transition-base),
+    transform var(--transition-smooth),
+    box-shadow var(--transition-base);
+}
+
+.hs-product:hover {
+  border-color: rgba(0, 179, 172, 0.25);
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(0, 179, 172, 0.1);
+}
+
+.hs-product__visual {
+  height: 180px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #0e1117 0%, #1a1d24 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Subtle gradient accent on hover */
+.hs-product:hover .hs-product__visual::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 50% 80%, rgba(0, 179, 172, 0.06) 0%, transparent 70%);
+}
+
+.hs-product__visual svg {
+  opacity: 0.6;
+  transition: opacity var(--transition-base), transform var(--transition-smooth);
+}
+
+.hs-product:hover .hs-product__visual svg {
+  opacity: 0.9;
+  transform: scale(1.05);
+}
+
+.hs-product__body {
+  padding: 1.5rem;
+}
+
+.hs-product__tag {
+  display: inline-block;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent-hisense);
+  background: rgba(0, 179, 172, 0.08);
+  padding: 0.25rem 0.65rem;
+  border-radius: var(--radius-pill);
+  margin-bottom: 0.75rem;
+}
+
+.hs-product__name {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 0.5rem;
+  line-height: 1.3;
+}
+
+.hs-product__desc {
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+
+/* ==========================================================================
+   6. ADVANTAGE SECTION
+   ========================================================================== */
+
+.hs-advantage {
+  position: relative;
+}
+
+/* Top accent line */
+.hs-advantage::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(80%, 600px);
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--accent-hisense), transparent);
+  opacity: 0.4;
+}
+
+.hs-advantage__grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+  margin-top: 3rem;
+}
+
+@media (min-width: 768px) {
+  .hs-advantage__grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.hs-advantage__card {
+  padding: 2rem 1.75rem;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-xl);
+  transition:
+    border-color var(--transition-base),
+    transform var(--transition-smooth),
+    background var(--transition-base);
+}
+
+.hs-advantage__card:hover {
+  border-color: rgba(0, 179, 172, 0.2);
+  transform: translateY(-3px);
+  background: var(--glass-bg-strong);
+}
+
+.hs-advantage__icon {
+  width: 52px;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 179, 172, 0.06);
+  border: 1px solid rgba(0, 179, 172, 0.12);
+  border-radius: var(--radius-lg);
+  color: var(--accent-hisense);
+  margin-bottom: 1.25rem;
+}
+
+.hs-advantage__title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 0.5rem;
+}
+
+.hs-advantage__text {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  line-height: 1.65;
+}
+
+
+/* ==========================================================================
+   7. CTA SECTION
+   ========================================================================== */
+
+.hs-cta {
+  background:
+    radial-gradient(ellipse at 30% 50%, rgba(0, 179, 172, 0.08) 0%, transparent 60%),
+    radial-gradient(ellipse at 70% 50%, rgba(26, 147, 210, 0.06) 0%, transparent 60%),
+    var(--bg-secondary);
+  text-align: center;
+  border-top: 1px solid var(--border-color);
+}
+
+.hs-cta .hs-section-title {
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.hs-cta__text {
+  font-size: clamp(1rem, 1.4vw, 1.1rem);
+  color: var(--text-secondary);
+  max-width: 580px;
+  margin: 0 auto 2.5rem;
+  line-height: 1.7;
+}
+
+.hs-cta__actions {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+
+/* ==========================================================================
+   8. HISENSE BUTTON VARIANT
+   ========================================================================== */
+
+.btn--hs {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.85rem 2rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  border-radius: var(--radius-pill);
+  background: var(--accent-hisense);
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  transition:
+    background var(--transition-fast),
+    transform var(--transition-fast),
+    box-shadow var(--transition-fast);
+}
+
+.btn--hs:hover {
+  background: var(--accent-hisense-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 20px rgba(0, 179, 172, 0.25);
+}
+
+.btn--hs-outline {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.85rem 2rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  border-radius: var(--radius-pill);
+  background: transparent;
+  color: var(--text-primary);
+  border: 1px solid var(--border-color-hover);
+  cursor: pointer;
+  transition:
+    border-color var(--transition-fast),
+    background var(--transition-fast),
+    color var(--transition-fast);
+}
+
+.btn--hs-outline:hover {
+  border-color: var(--accent-hisense);
+  background: rgba(0, 179, 172, 0.06);
+  color: var(--accent-hisense);
+}
+
+.btn--hs-outline svg {
+  flex-shrink: 0;
+}
+
+
+/* ==========================================================================
+   9. DIVIDER
+   ========================================================================== */
+
+.hs-divider {
+  width: 100%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--border-color-hover), transparent);
+  border: none;
+  margin: 0;
+}
+
+
+/* ==========================================================================
+   10. ENTRANCE ANIMATIONS
+   ========================================================================== */
+
+.hs-reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1), transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.hs-reveal--visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Stagger children */
+.hs-reveal[data-delay="1"] { transition-delay: 0.1s; }
+.hs-reveal[data-delay="2"] { transition-delay: 0.2s; }
+.hs-reveal[data-delay="3"] { transition-delay: 0.3s; }
+.hs-reveal[data-delay="4"] { transition-delay: 0.4s; }
+.hs-reveal[data-delay="5"] { transition-delay: 0.5s; }
+.hs-reveal[data-delay="6"] { transition-delay: 0.6s; }
+
+
+/* ==========================================================================
+   11. HERO ENTRANCE ANIMATION
+   ========================================================================== */
+
+.hs-hero__content .hs-hero__logo {
+  opacity: 0;
+  transform: translateY(20px);
+  animation: hs-hero-enter 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.3s forwards;
+}
+
+.hs-hero__content .hs-hero__title {
+  opacity: 0;
+  transform: translateY(20px);
+  animation: hs-hero-enter 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.5s forwards;
+}
+
+.hs-hero__content .hs-hero__subtitle {
+  opacity: 0;
+  transform: translateY(20px);
+  animation: hs-hero-enter 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.7s forwards;
+}
+
+.hs-hero__content .hs-hero__actions {
+  opacity: 0;
+  transform: translateY(20px);
+  animation: hs-hero-enter 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.9s forwards;
+}
+
+.hs-hero__scroll {
+  opacity: 0;
+  animation: hs-hero-enter 0.8s cubic-bezier(0.16, 1, 0.3, 1) 1.2s forwards;
+}
+
+@keyframes hs-hero-enter {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+
+/* ==========================================================================
+   12. RESPONSIVE FINE-TUNING
+   ========================================================================== */
+
+@media (max-width: 767px) {
+  .hs-hero {
+    min-height: 90vh;
+  }
+
+  .hs-hero__scroll {
+    display: none;
+  }
+
+  .hs-intro__stats {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .hs-stat--wide {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+  }
+
+  .hs-advantage__grid {
+    gap: 1rem;
+  }
+
+  .hs-cta__actions {
+    flex-direction: column;
+    align-items: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .hs-section {
+    padding: 3rem 1.25rem;
+  }
+
+  .hs-hero__content {
+    padding: 0 1.25rem 3rem;
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .hs-reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
+  .hs-hero__content .hs-hero__logo,
+  .hs-hero__content .hs-hero__title,
+  .hs-hero__content .hs-hero__subtitle,
+  .hs-hero__content .hs-hero__actions,
+  .hs-hero__scroll {
+    opacity: 1;
+    transform: none;
+    animation: none;
+  }
+
+  .hs-hero__scroll-line::after,
+  .hs-tech__hint svg {
+    animation: none;
+  }
+}

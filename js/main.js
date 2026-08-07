@@ -333,4 +333,127 @@ document.addEventListener('DOMContentLoaded', () => {
       clientsGrid.scrollLeft = scrollLeft - walk;
     });
   }
+
+  /* ============================================================
+   * 10. Accordion Toggle (FAQ / Glossary)
+   * ============================================================
+   * Toggles .accordion__item--active on click to reveal panel.
+   * Only one item is open at a time within each accordion group.
+   */
+  const accordions = document.querySelectorAll('.accordion');
+
+  accordions.forEach((accordion) => {
+    const triggers = accordion.querySelectorAll('.accordion__trigger');
+
+    triggers.forEach((trigger) => {
+      trigger.addEventListener('click', () => {
+        const item = trigger.closest('.accordion__item');
+        const isActive = item.classList.contains('accordion__item--active');
+
+        // Close all items in this accordion
+        accordion.querySelectorAll('.accordion__item--active').forEach((openItem) => {
+          openItem.classList.remove('accordion__item--active');
+        });
+
+        // Toggle the clicked item (open if it was closed)
+        if (!isActive) {
+          item.classList.add('accordion__item--active');
+        }
+      });
+    });
+  });
+
+  /* ============================================================
+   * 11. Animated Stat Counters
+   * ============================================================
+   * Animates numbers from 0 to their final value when they
+   * enter the viewport. Uses data-target attribute for the value.
+   */
+  const statValues = document.querySelectorAll('.stat-card__value[data-target]');
+
+  if (statValues.length) {
+    const animateCounter = (el) => {
+      const target = parseInt(el.getAttribute('data-target'), 10);
+      const suffix = el.getAttribute('data-suffix') || '';
+      const prefix = el.getAttribute('data-prefix') || '';
+      const duration = 2000; // ms
+      const startTime = performance.now();
+
+      const update = (currentTime) => {
+        const elapsed = currentTime - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+
+        // Ease-out cubic for smooth deceleration
+        const eased = 1 - Math.pow(1 - progress, 3);
+        const current = Math.round(eased * target);
+
+        el.textContent = prefix + current.toLocaleString('cs-CZ') + suffix;
+
+        if (progress < 1) {
+          requestAnimationFrame(update);
+        }
+      };
+
+      requestAnimationFrame(update);
+    };
+
+    const counterObserver = new IntersectionObserver(
+      (entries, observer) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            animateCounter(entry.target);
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.3 }
+    );
+
+    statValues.forEach((el) => counterObserver.observe(el));
+  }
+
+  /* ============================================================
+   * 12. Gallery Filter (Reference Page)
+   * ============================================================
+   * Filters .client-card elements by data-brand attribute.
+   * Toggles .gallery-card--hidden class for smooth show/hide.
+   */
+  const filterBtns = document.querySelectorAll('.gallery-filter__btn');
+  const galleryCards = document.querySelectorAll('.gallery-grid .client-card');
+
+  if (filterBtns.length && galleryCards.length) {
+    filterBtns.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const filter = btn.getAttribute('data-filter');
+
+        // Update active button
+        filterBtns.forEach((b) => b.classList.remove('gallery-filter__btn--active'));
+        btn.classList.add('gallery-filter__btn--active');
+
+        // Filter cards
+        galleryCards.forEach((card) => {
+          if (filter === 'all' || card.getAttribute('data-brand') === filter) {
+            card.classList.remove('gallery-card--hidden');
+          } else {
+            card.classList.add('gallery-card--hidden');
+          }
+        });
+      });
+    });
+  }
+
+  /* ============================================================
+   * 13. Active Nav Link for Multi-Page Navigation
+   * ============================================================
+   * Detects the current page URL and adds .nav__menu-link--active
+   * to the corresponding navigation link.
+   */
+  const currentPage = window.location.pathname.split('/').pop() || 'index.html';
+
+  navLinks.forEach((link) => {
+    const href = link.getAttribute('href');
+    if (href === currentPage) {
+      link.classList.add('nav__menu-link--active');
+    }
+  });
 });
