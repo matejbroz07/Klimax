@@ -73,7 +73,7 @@
 .page-hero__content {
   position: relative;
   z-index: 10;
-  padding: 3rem 0 4rem;
+  padding: 3rem 1rem 4rem;
   width: 100%;
 }
 
@@ -1168,7 +1168,6 @@
 
 .brand-detail {
   padding: 4rem 0;
-  border-bottom: 1px solid var(--border-color);
 }
 
 .brand-detail:last-child {
@@ -1195,6 +1194,23 @@
   .brand-detail--reverse .brand-detail__visual {
     order: 1;
   }
+}
+
+.brand-detail__content {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
+.brand-detail__content:hover {
+  border: none;
+  box-shadow: none;
+}
+
+.brand-detail__content::after {
+  display: none;
 }
 
 .brand-detail__logo {
@@ -1319,7 +1335,7 @@
    ========================================================================== */
 
 .map-section {
-  border-radius: var(--radius-xl);
+  border-radius: 0;
   overflow: hidden;
   border: 1px solid var(--glass-border);
   box-shadow: var(--glass-shadow);
@@ -1918,4 +1934,211 @@
   background: linear-gradient(90deg, transparent, var(--border-color), transparent);
   margin: 1rem 0;
   border: none;
+}
+
+
+/* ==========================================================================
+   25. KORE SLIDESHOW (.kore-slideshow)
+   ==========================================================================
+   Interactive carousel of KORE application screenshots.
+   ========================================================================== */
+
+.kore-slideshow {
+  position: relative;
+  width: 100%;
+  max-width: 1000px;
+  margin: 0 auto;
+  aspect-ratio: 16 / 9;
+  background: var(--glass-bg);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.2);
+  backdrop-filter: blur(var(--glass-blur)) saturate(1.2);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  box-shadow: var(--glass-glow), var(--glass-shadow);
+}
+
+/* Fallback height for browsers that don't support aspect-ratio well */
+@supports not (aspect-ratio: 16 / 9) {
+  .kore-slideshow {
+    height: 56.25vw;
+    max-height: 562px;
+  }
+}
+
+.kore-slideshow__track {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.kore-slideshow__slide {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.6s cubic-bezier(0.25, 1, 0.5, 1), visibility 0.6s;
+}
+
+.kore-slideshow__slide--active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.kore-slideshow__slide img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top;
+  display: block;
+}
+
+.kore-slideshow__overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 4rem 2rem 2rem;
+  background: linear-gradient(to top, rgba(12, 14, 18, 0.95) 0%, rgba(12, 14, 18, 0.7) 40%, transparent 100%);
+  color: #fff;
+  pointer-events: none;
+}
+
+.kore-slideshow__overlay h3 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 0.5rem;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.kore-slideshow__overlay p {
+  font-size: 0.95rem;
+  color: rgba(255, 255, 255, 0.9);
+  line-height: 1.6;
+  margin: 0;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+}
+
+/* Navigation Buttons */
+.kore-slideshow__btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(18, 20, 24, 0.6);
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 10;
+  transition: all var(--transition-base);
+  opacity: 0;
+}
+
+.kore-slideshow:hover .kore-slideshow__btn {
+  opacity: 1;
+}
+
+.kore-slideshow__btn:hover {
+  background: var(--accent-klimax);
+  border-color: var(--accent-klimax);
+}
+
+.kore-slideshow__btn--prev {
+  left: 1rem;
+}
+
+.kore-slideshow__btn--next {
+  right: 1rem;
+}
+
+/* Dots */
+.kore-slideshow__dots {
+  position: absolute;
+  bottom: 1rem;
+  right: 2rem;
+  display: flex;
+  gap: 0.5rem;
+  z-index: 10;
+}
+
+.kore-slideshow__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  transition: all var(--transition-base);
+}
+
+.kore-slideshow__dot:hover {
+  background: rgba(255, 255, 255, 0.6);
+}
+
+.kore-slideshow__dot--active {
+  background: var(--accent-klimax);
+  width: 24px;
+  border-radius: 4px;
+}
+
+@media (max-width: 600px) {
+  .kore-slideshow {
+    aspect-ratio: auto;
+  }
+  .kore-slideshow__slide {
+    inset: auto;
+    top: 0;
+    left: 0;
+    width: 100%;
+  }
+  .kore-slideshow__slide--active {
+    position: relative;
+  }
+  .kore-slideshow__slide img {
+    position: relative;
+    height: auto;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+  }
+  .kore-slideshow__overlay {
+    position: relative;
+    padding: 1.5rem 1.25rem 3rem;
+    background: transparent;
+  }
+  .kore-slideshow__overlay h3 {
+    font-size: 1.25rem;
+    margin-bottom: 0.5rem;
+    color: var(--text-primary);
+    text-shadow: none;
+  }
+  .kore-slideshow__overlay p {
+    font-size: 0.95rem;
+    display: block;
+    color: var(--text-secondary);
+    text-shadow: none;
+  }
+  .kore-slideshow__btn {
+    opacity: 1;
+    width: 36px;
+    height: 36px;
+    top: 25%;
+  }
+  .kore-slideshow__btn svg {
+    width: 18px;
+    height: 18px;
+  }
+  .kore-slideshow__dots {
+    right: 50%;
+    transform: translateX(50%);
+    bottom: 1rem;
+  }
 }

@@ -590,6 +590,7 @@
 .z-row__text {
   color: var(--text-secondary);
   font-size: 1.125rem;
+  margin-bottom: 10px;
   line-height: 1.8;
 }
 
@@ -604,7 +605,7 @@
 }
 
 .z-row--reverse .z-row__image {
-  border-radius: 15px 120px 15px 120px;
+  border-radius: 120px 15px 120px 15px;
 }
 
 @media (max-width: 767px) {

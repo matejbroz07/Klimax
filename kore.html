@@ -62,17 +62,72 @@
         </header>
 
         <section class="section">
-            <div class="container container--narrow fade-in">
-                <div class="empty-state">
-                    <div class="empty-state__icon">
-                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-                        </svg>
+            <div class="container fade-in">
+                <div class="section__header">
+                    <h2 class="section__title">KORE v praxi</h2>
+                    <p class="section__subtitle">Klimax Operations & Resource Engine — interní platforma, která řídí celý provoz od nabídky po fakturaci.</p>
+                </div>
+                <div class="kore-slideshow" id="kore-slideshow">
+                    <div class="kore-slideshow__track">
+                        <div class="kore-slideshow__slide kore-slideshow__slide--active">
+                            <img src="assets/kore-images/kore-planovani-techniku.jpg" alt="Plánování techniků v KORE" loading="lazy">
+                            <div class="kore-slideshow__overlay">
+                                <h3>Plánování techniků</h3>
+                                <p>Denní a týdenní kalendář s přehledem zakázek, výjezdů a vytížení jednotlivých techniků. Drag & drop plánování přímo v mřížce.</p>
+                            </div>
+                        </div>
+                        <div class="kore-slideshow__slide">
+                            <img src="assets/kore-images/kore-detail-zakazky.jpg" alt="Detail zakázky v KORE" loading="lazy">
+                            <div class="kore-slideshow__overlay">
+                                <h3>Řízení zakázek</h3>
+                                <p>Kompletní workflow zakázky od přijetí po fakturaci v 6 krocích. Přehled historie, výjezdů, dokumentů a nákladů na jednom místě.</p>
+                            </div>
+                        </div>
+                        <div class="kore-slideshow__slide">
+                            <img src="assets/kore-images/kore-fgas-evidence.jpg" alt="F-gas evidence v KORE" loading="lazy">
+                            <div class="kore-slideshow__overlay">
+                                <h3>F-gas evidence</h3>
+                                <p>Automatické sledování kontrol těsnosti dle nařízení EU. Přehled zařízení po termínu, blížících se kontrol a kompletní záznamy s výsledky.</p>
+                            </div>
+                        </div>
+                        <div class="kore-slideshow__slide">
+                            <img src="assets/kore-images/kore-detail-nabidky.jpg" alt="Detail nabídky v KORE" loading="lazy">
+                            <div class="kore-slideshow__overlay">
+                                <h3>Nabídky a kalkulace</h3>
+                                <p>Tvorba cenových nabídek s položkami, slevami a podmínkami. Odeslání zákazníkovi jedním kliknutím, export do PDF.</p>
+                            </div>
+                        </div>
+                        <div class="kore-slideshow__slide">
+                            <img src="assets/kore-images/kore-technicka-pomoc.jpg" alt="Technická pomoc v KORE" loading="lazy">
+                            <div class="kore-slideshow__overlay">
+                                <h3>AI technická pomoc</h3>
+                                <p>Inteligentní asistent pro dotazy do technické dokumentace výrobců. Okamžité odpovědi na chybové kódy, postupy a nastavení.</p>
+                            </div>
+                        </div>
+                        <div class="kore-slideshow__slide">
+                            <img src="assets/kore-images/kore-historie-zakazky.jpg" alt="Historie zakázky v KORE" loading="lazy">
+                            <div class="kore-slideshow__overlay">
+                                <h3>Historie a audit trail</h3>
+                                <p>Kompletní log všech změn stavů, přiřazení a akcí. Transparentní přehled o průběhu každé zakázky pro interní kontrolu.</p>
+                            </div>
+                        </div>
                     </div>
-                    <h2 class="empty-state__title">Portál KORE bude brzy k dispozici</h2>
-                    <p class="empty-state__text">Pracujeme na novém zákaznickém portálu, který vám umožní mít přehled o vašich zařízeních 24/7. Sledujte historii servisních zásahů, plánujte prohlídky a hlaste závady online.</p>
-                    <a href="kontakt.html" class="btn btn--primary btn--pill">Kontaktujte nás</a>
+                    
+                    <button class="kore-slideshow__btn kore-slideshow__btn--prev" aria-label="Předchozí slide">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                    </button>
+                    <button class="kore-slideshow__btn kore-slideshow__btn--next" aria-label="Další slide">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                    </button>
+
+                    <div class="kore-slideshow__dots">
+                        <button class="kore-slideshow__dot kore-slideshow__dot--active" aria-label="Zobrazit slide 1"></button>
+                        <button class="kore-slideshow__dot" aria-label="Zobrazit slide 2"></button>
+                        <button class="kore-slideshow__dot" aria-label="Zobrazit slide 3"></button>
+                        <button class="kore-slideshow__dot" aria-label="Zobrazit slide 4"></button>
+                        <button class="kore-slideshow__dot" aria-label="Zobrazit slide 5"></button>
+                        <button class="kore-slideshow__dot" aria-label="Zobrazit slide 6"></button>
+                    </div>
                 </div>
             </div>
         </section>
@@ -80,36 +135,36 @@
         <section class="section section--dark">
             <div class="container fade-in">
                 <div class="section__header">
-                    <h2 class="section__title">Co KORE nabídne</h2>
+                    <h2 class="section__title">Klíčové moduly</h2>
                 </div>
                 <div class="feature-grid">
                     <div class="feature-card">
                         <div class="feature-card__icon">
                             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
                         </div>
-                        <h3 class="feature-card__title">Online přehled zařízení</h3>
-                        <p class="feature-card__text">Kompletní evidence všech vašich klimatizací a VZT systémů na jednom místě.</p>
+                        <h3 class="feature-card__title">Dashboard a přehledy</h3>
+                        <p class="feature-card__text">Centrální dashboard s klíčovými metrikami, přehled otevřených zakázek, vytížení techniků a stav fakturace.</p>
                     </div>
                     <div class="feature-card">
                         <div class="feature-card__icon">
                             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect><path d="M9 14h6"></path><path d="M9 18h6"></path><path d="M9 10h6"></path></svg>
                         </div>
-                        <h3 class="feature-card__title">Historie servisních zásahů</h3>
-                        <p class="feature-card__text">Přehled všech provedených oprav, údržby a revizí s podrobnou dokumentací.</p>
+                        <h3 class="feature-card__title">Správa zakázek</h3>
+                        <p class="feature-card__text">6-krokový workflow od přijetí požadavku po dokončení. Kompletní evidence výjezdů, materiálu a pracovních hodin.</p>
                     </div>
                     <div class="feature-card">
                         <div class="feature-card__icon">
                             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
                         </div>
-                        <h3 class="feature-card__title">Plánované prohlídky</h3>
-                        <p class="feature-card__text">Automatické upozornění na blížící se termíny pravidelné údržby a revizí.</p>
+                        <h3 class="feature-card__title">Plánování a dispečink</h3>
+                        <p class="feature-card__text">Vizuální kalendář s drag & drop přidělováním techniků. Denní a týdenní pohled s přehledem vytížení.</p>
                     </div>
                     <div class="feature-card">
                         <div class="feature-card__icon">
                             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
                         </div>
-                        <h3 class="feature-card__title">Hlášení závad online</h3>
-                        <p class="feature-card__text">Rychlé nahlášení poruchy přímo z portálu s automatickým přidělením technika.</p>
+                        <h3 class="feature-card__title">F-gas a compliance</h3>
+                        <p class="feature-card__text">Automatické sledování termínů kontrol těsnosti dle EU nařízení. Evidence chladiv, výsledků a certifikátů.</p>
                     </div>
                 </div>
             </div>

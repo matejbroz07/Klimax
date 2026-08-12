@@ -315,7 +315,23 @@
   }
 
   .hero__content {
-    padding: 2rem 1.5rem 3rem;
+    padding: 2rem 1.25rem 3rem;
+    display: flex;
+    justify-content: center;
+  }
+
+  .hero__content-inner {
+    max-width: 100%;
+    width: 100%;
+    text-align: center;
+  }
+
+  .hero__partner-logo {
+    justify-content: center;
+  }
+
+  .hero__actions {
+    justify-content: center;
   }
 
   .hero__title {

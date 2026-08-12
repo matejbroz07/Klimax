@@ -456,4 +456,68 @@ document.addEventListener('DOMContentLoaded', () => {
       link.classList.add('nav__menu-link--active');
     }
   });
+
+  /* ============================================================
+   * 14. KORE Slideshow
+   * ============================================================
+   */
+  const slideshow = document.getElementById('kore-slideshow');
+  if (slideshow) {
+    const slides = slideshow.querySelectorAll('.kore-slideshow__slide');
+    const dots = slideshow.querySelectorAll('.kore-slideshow__dot');
+    const prevBtn = slideshow.querySelector('.kore-slideshow__btn--prev');
+    const nextBtn = slideshow.querySelector('.kore-slideshow__btn--next');
+    let currentIndex = 0;
+    let intervalId;
+    const intervalTime = 5000;
+
+    const goToSlide = (index) => {
+      slides[currentIndex].classList.remove('kore-slideshow__slide--active');
+      dots[currentIndex].classList.remove('kore-slideshow__dot--active');
+      
+      currentIndex = (index + slides.length) % slides.length;
+      
+      slides[currentIndex].classList.add('kore-slideshow__slide--active');
+      dots[currentIndex].classList.add('kore-slideshow__dot--active');
+    };
+
+    const nextSlide = () => goToSlide(currentIndex + 1);
+    const prevSlide = () => goToSlide(currentIndex - 1);
+
+    const startSlideshow = () => {
+      intervalId = setInterval(nextSlide, intervalTime);
+    };
+
+    const stopSlideshow = () => {
+      clearInterval(intervalId);
+    };
+
+    // Event Listeners
+    if (prevBtn) prevBtn.addEventListener('click', () => {
+      prevSlide();
+      stopSlideshow();
+      startSlideshow();
+    });
+    
+    if (nextBtn) nextBtn.addEventListener('click', () => {
+      nextSlide();
+      stopSlideshow();
+      startSlideshow();
+    });
+
+    dots.forEach((dot, index) => {
+      dot.addEventListener('click', () => {
+        goToSlide(index);
+        stopSlideshow();
+        startSlideshow();
+      });
+    });
+
+    // Pause on hover
+    slideshow.addEventListener('mouseenter', stopSlideshow);
+    slideshow.addEventListener('mouseleave', startSlideshow);
+
+    // Start
+    startSlideshow();
+  }
 });
