@@ -293,45 +293,118 @@ document.addEventListener('DOMContentLoaded', () => {
   prefersReducedMotion.addEventListener('change', handleReducedMotion);
 
   /* ============================================================
-   * 9. Drag to Scroll for Trusted Clients Grid
+   * 9. Trusted Clients Carousel (Drag, Touch, Arrows, Edge-Fade)
    * ============================================================
+   * Full carousel controller:
+   * - Mouse drag-to-scroll (desktop)
+   * - Touch swipe (mobile/tablet, passive)
+   * - Prev / Next arrow buttons (smooth scroll by one card width)
+   * - Edge-fade gradient classes on the wrapper
+   * - Disabled state on arrows at scroll boundaries
    */
   const clientsGrid = document.querySelector('.trusted-clients__grid');
+
   if (clientsGrid) {
-    let isDown = false;
-    let startX;
-    let scrollLeft;
+    const wrapper  = clientsGrid.closest('.trusted-clients__grid-wrapper');
+    const prevBtn  = wrapper?.querySelector('.trusted-clients__nav--prev');
+    const nextBtn  = wrapper?.querySelector('.trusted-clients__nav--next');
+
+    /* --- Edge-fade & arrow state ----------------------------------------- */
+    const updateScrollUI = () => {
+      if (!wrapper) return;
+      const sl = clientsGrid.scrollLeft;
+      const maxScroll = clientsGrid.scrollWidth - clientsGrid.clientWidth;
+      const threshold = 4; // px tolerance for rounding
+
+      const atStart = sl <= threshold;
+      const atEnd   = sl >= maxScroll - threshold;
+
+      wrapper.classList.toggle('trusted-clients__grid-wrapper--fade-left', !atStart);
+      wrapper.classList.toggle('trusted-clients__grid-wrapper--fade-right', !atEnd);
+
+      if (prevBtn) prevBtn.disabled = atStart;
+      if (nextBtn) nextBtn.disabled = atEnd;
+    };
+
+    // Run once + on every scroll
+    updateScrollUI();
+    clientsGrid.addEventListener('scroll', updateScrollUI, { passive: true });
+    // Re-evaluate on resize (card widths may change)
+    window.addEventListener('resize', updateScrollUI, { passive: true });
+
+    /* --- Arrow-button click → scroll by one card width ------------------- */
+    const scrollByCard = (direction) => {
+      const firstCard = clientsGrid.querySelector('.client-card');
+      if (!firstCard) return;
+      const cardWidth = firstCard.offsetWidth +
+        parseFloat(getComputedStyle(clientsGrid).gap || '0');
+      clientsGrid.scrollBy({ left: direction * cardWidth, behavior: 'smooth' });
+    };
+
+    if (prevBtn) prevBtn.addEventListener('click', () => scrollByCard(-1));
+    if (nextBtn) nextBtn.addEventListener('click', () => scrollByCard(1));
+
+    /* --- Mouse drag-to-scroll -------------------------------------------- */
+    let isDragging = false;
+    let startX     = 0;
+    let scrollLeft = 0;
+    let hasDragged = false;
 
     clientsGrid.addEventListener('mousedown', (e) => {
-      isDown = true;
+      isDragging = true;
+      hasDragged = false;
       startX = e.pageX - clientsGrid.offsetLeft;
       scrollLeft = clientsGrid.scrollLeft;
-      // Disable scroll snapping during drag for smoother experience
       clientsGrid.style.scrollSnapType = 'none';
       clientsGrid.style.scrollBehavior = 'auto';
     });
 
-    clientsGrid.addEventListener('mouseleave', () => {
-      if (!isDown) return;
-      isDown = false;
+    const stopDrag = () => {
+      if (!isDragging) return;
+      isDragging = false;
       clientsGrid.style.scrollSnapType = '';
       clientsGrid.style.scrollBehavior = '';
-    });
+    };
 
-    clientsGrid.addEventListener('mouseup', () => {
-      if (!isDown) return;
-      isDown = false;
-      clientsGrid.style.scrollSnapType = '';
-      clientsGrid.style.scrollBehavior = '';
-    });
+    clientsGrid.addEventListener('mouseleave', stopDrag);
+    clientsGrid.addEventListener('mouseup', stopDrag);
 
     clientsGrid.addEventListener('mousemove', (e) => {
-      if (!isDown) return;
+      if (!isDragging) return;
       e.preventDefault();
       const x = e.pageX - clientsGrid.offsetLeft;
-      const walk = (x - startX) * 2; // Scroll-fast modifier
+      const walk = (x - startX) * 1.5;
+      if (Math.abs(walk) > 5) hasDragged = true;
       clientsGrid.scrollLeft = scrollLeft - walk;
     });
+
+    // Prevent accidental link clicks after drag
+    clientsGrid.addEventListener('click', (e) => {
+      if (hasDragged) {
+        e.preventDefault();
+        e.stopPropagation();
+        hasDragged = false;
+      }
+    }, true);
+
+    /* --- Touch swipe (passive, iOS-safe) --------------------------------- */
+    let touchStartX = 0;
+    let touchScrollLeft = 0;
+
+    clientsGrid.addEventListener('touchstart', (e) => {
+      touchStartX = e.touches[0].pageX;
+      touchScrollLeft = clientsGrid.scrollLeft;
+      clientsGrid.style.scrollSnapType = 'none';
+    }, { passive: true });
+
+    clientsGrid.addEventListener('touchmove', (e) => {
+      const dx = e.touches[0].pageX - touchStartX;
+      clientsGrid.scrollLeft = touchScrollLeft - dx;
+    }, { passive: true });
+
+    clientsGrid.addEventListener('touchend', () => {
+      clientsGrid.style.scrollSnapType = '';
+    }, { passive: true });
   }
 
   /* ============================================================
@@ -519,5 +592,57 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Start
     startSlideshow();
+  }
+
+  /* ============================================================
+   * 15. Journey Step Scroll Observer
+   * ============================================================
+   * Highlights exactly ONE .journey-step that is closest to the 
+   * center of the viewport.
+   */
+  const journeySteps = document.querySelectorAll('.journey-step');
+  const journeySection = document.querySelector('.customer-journey');
+  
+  if (journeySteps.length > 0 && journeySection) {
+    const updateActiveStep = () => {
+      const sectionRect = journeySection.getBoundingClientRect();
+      
+      // If the section is completely off-screen, remove all highlights
+      if (sectionRect.bottom < 0 || sectionRect.top > window.innerHeight) {
+        journeySteps.forEach(step => step.classList.remove('is-active'));
+        return;
+      }
+
+      let closestStep = null;
+      let minDistance = Infinity;
+      const viewportCenter = window.innerHeight / 2;
+
+      // Find the step whose center is closest to the viewport center
+      journeySteps.forEach((step) => {
+        const rect = step.getBoundingClientRect();
+        const stepCenter = rect.top + rect.height / 2;
+        const distance = Math.abs(viewportCenter - stepCenter);
+
+        if (distance < minDistance) {
+          minDistance = distance;
+          closestStep = step;
+        }
+      });
+
+      // Apply the active class ONLY to the closest step
+      journeySteps.forEach((step) => {
+        if (step === closestStep) {
+          step.classList.add('is-active');
+        } else {
+          step.classList.remove('is-active');
+        }
+      });
+    };
+
+    window.addEventListener('scroll', updateActiveStep, { passive: true });
+    window.addEventListener('resize', updateActiveStep, { passive: true });
+    
+    // Initial check
+    updateActiveStep();
   }
 });

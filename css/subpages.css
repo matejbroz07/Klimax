@@ -568,6 +568,122 @@
   line-height: 1.6;
 }
 
+/* ==========================================================================
+   4.1 CUSTOMER JOURNEY (Timeline)
+   ========================================================================== */
+
+.customer-journey {
+  position: relative;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem 0;
+}
+
+/* Vertical connecting line */
+.customer-journey::before {
+  content: '';
+  position: absolute;
+  top: 36px;
+  bottom: 36px;
+  left: 28px; /* Centers the 2px line in the 58px icon */
+  width: 2px;
+  background: var(--glass-border);
+  z-index: 0;
+}
+
+@media (max-width: 767px) {
+  .customer-journey::before {
+    left: 23px; /* Centers in 48px icon */
+  }
+}
+
+.journey-step {
+  position: relative;
+  display: flex;
+  gap: 2rem;
+  padding-bottom: 2.5rem;
+  z-index: 1;
+}
+
+.journey-step:last-child {
+  padding-bottom: 0;
+}
+
+.journey-step__icon {
+  flex-shrink: 0;
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  background: var(--bg-primary); /* Match body bg so the gap looks like negative space */
+  border: 2px solid var(--accent-klimax);
+  color: var(--accent-klimax);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 0 8px var(--bg-primary); /* Creates a mask gap in the timeline */
+  transition: all var(--transition-smooth);
+}
+
+.journey-step__icon svg {
+  width: 24px;
+  height: 24px;
+}
+
+@media (max-width: 767px) {
+  .journey-step__icon {
+    width: 48px;
+    height: 48px;
+    box-shadow: 0 0 0 6px var(--bg-primary);
+  }
+  .journey-step__icon svg {
+    width: 20px;
+    height: 20px;
+  }
+  .journey-step {
+    gap: 1.25rem;
+  }
+}
+
+.journey-step.is-active .journey-step__icon {
+  transform: scale(1.1);
+  background: var(--accent-klimax);
+  color: #fff;
+  box-shadow: 0 0 0 8px var(--bg-primary), var(--shadow-glow-klimax);
+}
+
+.journey-step__content {
+  flex: 1;
+  background: var(--glass-bg);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.2);
+  backdrop-filter: blur(var(--glass-blur)) saturate(1.2);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem 2rem;
+  box-shadow: var(--glass-glow), var(--glass-shadow);
+  transition: transform var(--transition-smooth), background var(--transition-base), border-color var(--transition-base);
+}
+
+.journey-step.is-active .journey-step__content {
+  background: var(--glass-bg-strong);
+  border-color: var(--glass-border-strong);
+  transform: translateX(10px);
+}
+
+.journey-step__title {
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 0.5rem;
+}
+
+.journey-step__text {
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin: 0;
+}
+
+
 
 /* ==========================================================================
    5. PRODUCT CARDS (.product-card)
