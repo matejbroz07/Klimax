@@ -895,6 +895,31 @@
   }
 }
 
+/* KORE Inquiry Form iframe */
+.kore-form-iframe {
+  width: 100%;
+  min-height: 1450px;
+  height: 1450px;
+  border: 0;
+  display: block;
+  background: transparent;
+  transition: height 0.25s ease-out;
+}
+
+@media (max-width: 900px) {
+  .kore-form-iframe {
+    min-height: 1750px;
+    height: 1750px;
+  }
+}
+
+@media (max-width: 480px) {
+  .kore-form-iframe {
+    min-height: 1900px;
+    height: 1900px;
+  }
+}
+
 .contact-info {
   display: flex;
   flex-direction: column;
@@ -1110,12 +1135,14 @@
   color: var(--accent-klimax);
 }
 
-.download-card__info {
+.download-card__info,
+.download-card__content {
   flex: 1;
   min-width: 0;
 }
 
-.download-card__name {
+.download-card__name,
+.download-card__title {
   font-weight: 600;
   font-size: 0.95rem;
   color: var(--text-primary);
@@ -1130,13 +1157,15 @@
   color: var(--text-muted);
 }
 
-.download-card__action {
+.download-card__action,
+.download-card__arrow {
   flex-shrink: 0;
   color: var(--text-muted);
   transition: color var(--transition-base), transform var(--transition-base);
 }
 
-.download-card:hover .download-card__action {
+.download-card:hover .download-card__action,
+.download-card:hover .download-card__arrow {
   color: var(--accent-klimax);
   transform: translateY(2px);
 }

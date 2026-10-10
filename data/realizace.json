@@ -1,0 +1,110 @@
+[
+    {
+        "id": 1,
+        "title": "OMV Česká republika",
+        "brand": "hokkaido",
+        "image": "assets\/realisation\/omv.jpg",
+        "hasBrandLogo": true,
+        "brandLogo": "assets\/images\/Hokkaido.webp",
+        "brandLabel": "Využívá:"
+    },
+    {
+        "id": 2,
+        "title": "Hotel JALTA - Praha",
+        "brand": "toshiba",
+        "image": "assets\/realisation\/jalta.png",
+        "hasBrandLogo": true,
+        "brandLogo": "assets\/images\/Toshiba.webp",
+        "brandLabel": "Využívá:"
+    },
+    {
+        "id": 3,
+        "title": "AGC Glass Europe",
+        "brand": "hokkaido",
+        "image": "assets\/realisation\/agc.jpg",
+        "hasBrandLogo": true,
+        "brandLogo": "assets\/images\/Hokkaido.webp",
+        "brandLabel": "Využívá:"
+    },
+    {
+        "id": 4,
+        "title": "MONDI Štětí",
+        "brand": "toshiba",
+        "image": "assets\/realisation\/mondi.jpg",
+        "hasBrandLogo": true,
+        "brandLogo": "assets\/images\/Toshiba.webp",
+        "brandLabel": "Využívá:"
+    },
+    {
+        "id": 5,
+        "title": "AAA auto",
+        "brand": "toshiba",
+        "image": "assets\/realisation\/aaa.png",
+        "hasBrandLogo": true,
+        "brandLogo": "assets\/images\/Toshiba.webp",
+        "brandLabel": "Využívá:"
+    },
+    {
+        "id": 6,
+        "title": "AFFIDEA Praha",
+        "brand": "hisense",
+        "image": "assets\/realisation\/affidea.png",
+        "hasBrandLogo": false,
+        "brandLogo": "",
+        "brandLabel": "Využívá:"
+    },
+    {
+        "id": 7,
+        "title": "Pension U Kozičky",
+        "brand": "hisense",
+        "image": "assets\/realisation\/pension-u-kozicky.png",
+        "hasBrandLogo": false,
+        "brandLogo": "",
+        "brandLabel": "Využívá:"
+    },
+    {
+        "id": 8,
+        "title": "Plaza ALTA Hotel",
+        "brand": "toshiba",
+        "image": "assets\/realisation\/alta.png",
+        "hasBrandLogo": false,
+        "brandLogo": "",
+        "brandLabel": "Využívá:"
+    },
+    {
+        "id": 9,
+        "title": "PE Holding",
+        "brand": "hisense",
+        "image": "assets\/realisation\/pe-holding.jpg",
+        "hasBrandLogo": false,
+        "brandLogo": "",
+        "brandLabel": "Využívá:"
+    },
+    {
+        "id": 10,
+        "title": "Hotel Giovanni Giacomo",
+        "brand": "hokkaido",
+        "image": "assets\/realisation\/giovanni-giacomo.png",
+        "hasBrandLogo": false,
+        "brandLogo": "",
+        "brandLabel": "Využívá:"
+    },
+    {
+        "id": 11,
+        "title": "Ústav živočišné fyziologie",
+        "brand": "toshiba",
+        "image": "assets\/realisation\/libechov.jpg",
+        "hasBrandLogo": false,
+        "brandLogo": "",
+        "brandLabel": "Využívá:"
+    },
+    {
+        "id": 12,
+        "title": "Nemocnice Teplice",
+        "brand": "hisense",
+        "image": "assets\/images\/gallery_server.png",
+        "hasBrandLogo": false,
+        "brandLogo": "",
+        "brandLabel": "Využívá:"
+    }
+]

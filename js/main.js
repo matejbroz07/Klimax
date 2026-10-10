@@ -165,25 +165,32 @@ document.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
     anchor.addEventListener('click', (e) => {
       const href = anchor.getAttribute('href');
-      // Skip bare "#" links
-      if (!href || href === '#') return;
+      // Prevent scroll jumping on bare "#" placeholder links
+      if (!href || href === '#') {
+        e.preventDefault();
+        return;
+      }
 
-      const target = document.querySelector(href);
-      if (!target) return;
+      try {
+        const target = document.querySelector(href);
+        if (!target) return;
 
-      e.preventDefault();
+        e.preventDefault();
 
-      const topOffset =
-        target.getBoundingClientRect().top + window.scrollY - NAV_HEIGHT;
+        const topOffset =
+          target.getBoundingClientRect().top + window.scrollY - NAV_HEIGHT;
 
-      window.scrollTo({
-        top: topOffset,
-        behavior: 'smooth',
-      });
+        window.scrollTo({
+          top: topOffset,
+          behavior: 'smooth',
+        });
 
-      // Update the URL hash without jumping
-      if (history.pushState) {
-        history.pushState(null, '', href);
+        // Update the URL hash without jumping
+        if (history.pushState) {
+          history.pushState(null, '', href);
+        }
+      } catch {
+        // Ignore invalid CSS selectors
       }
     });
   });
@@ -644,5 +651,31 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Initial check
     updateActiveStep();
+  }
+
+  /* ============================================================
+   * 16. KORE Form Iframe Auto-Resize
+   * ============================================================
+   * Listens for postMessage sent by https://kore.klimax.cz/poptavka
+   * and dynamically updates the iframe height to match its exact
+   * content height so the form is never cut off on any device.
+   */
+  const koreIframe = document.getElementById('kore-form-iframe') || document.querySelector('iframe[src*="kore.klimax.cz"]');
+  if (koreIframe) {
+    window.addEventListener('message', (event) => {
+      // Validate sender origin if available
+      if (event.origin && !event.origin.includes('kore.klimax.cz') && !event.origin.includes('klimax.cz')) {
+        return;
+      }
+
+      if (event.data && event.data.type === 'klimax-form-resize' && typeof event.data.height === 'number') {
+        const measuredHeight = event.data.height;
+        if (measuredHeight > 100) {
+          // Add 40px buffer for safety margins, focus outlines, and shadows
+          const targetHeight = Math.max(measuredHeight + 40, 1100);
+          koreIframe.style.height = `${targetHeight}px`;
+        }
+      }
+    });
   }
 });
