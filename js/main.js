@@ -671,8 +671,8 @@ document.addEventListener('DOMContentLoaded', () => {
       if (event.data && event.data.type === 'klimax-form-resize' && typeof event.data.height === 'number') {
         const measuredHeight = event.data.height;
         if (measuredHeight > 100) {
-          // Add 40px buffer for safety margins, focus outlines, and shadows
-          const targetHeight = Math.max(measuredHeight + 40, 1100);
+          // Add 15px buffer for safety margins and focus outlines
+          const targetHeight = Math.max(measuredHeight + 15, 350);
           koreIframe.style.height = `${targetHeight}px`;
         }
       }

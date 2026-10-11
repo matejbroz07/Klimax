@@ -898,8 +898,8 @@
 /* KORE Inquiry Form iframe */
 .kore-form-iframe {
   width: 100%;
-  min-height: 1450px;
-  height: 1450px;
+  height: 980px;
+  min-height: 0;
   border: 0;
   display: block;
   background: transparent;
@@ -908,15 +908,13 @@
 
 @media (max-width: 900px) {
   .kore-form-iframe {
-    min-height: 1750px;
-    height: 1750px;
+    height: 1020px;
   }
 }
 
-@media (max-width: 480px) {
+@media (max-width: 560px) {
   .kore-form-iframe {
-    min-height: 1900px;
-    height: 1900px;
+    height: 1280px;
   }
 }
 
