@@ -914,3 +914,154 @@ a:hover {
         grid-template-columns: 1fr;
     }
 }
+
+/* =========================================
+   ZNAČKY V CAROUSELU (BRANDS)
+   ========================================= */
+.brands-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+    gap: 16px;
+}
+
+.brand-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.brand-card:hover {
+    border-color: var(--border-focus);
+}
+
+.brand-card__preview {
+    background: #0f172a;
+    height: 105px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    position: relative;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.brand-card__img {
+    max-height: 52px;
+    max-width: 85%;
+    object-fit: contain;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+}
+
+.brand-card__order-badge {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    background: rgba(0, 0, 0, 0.65);
+    color: #94a3b8;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 7px;
+    border-radius: 4px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    letter-spacing: 0.5px;
+}
+
+.brand-card__body {
+    padding: 12px 14px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.brand-card__name {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.brand-card__file {
+    font-size: 11px;
+    color: var(--text-muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-bottom: 12px;
+    font-family: monospace;
+}
+
+.brand-card__footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding-top: 10px;
+    border-top: 1px solid #f1f5f9;
+}
+
+.brand-card__reorder {
+    display: flex;
+    gap: 4px;
+}
+
+.brand-card__reorder .btn {
+    padding: 3px 6px;
+    height: 28px;
+    width: 28px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-secondary);
+}
+
+.brand-card__reorder .btn:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+
+.brand-card__actions {
+    display: flex;
+    gap: 6px;
+}
+
+.brand-card__actions .btn {
+    padding: 3px 8px;
+    font-size: 12px;
+    height: 28px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+#brand-image-preview .file-preview {
+    background: #0f172a;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    padding: 10px 14px;
+    margin-top: 10px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+#brand-image-preview .file-preview__img {
+    max-height: 38px;
+    max-width: 90px;
+    object-fit: contain;
+}
+
+#brand-image-preview .file-preview__name {
+    color: #e2e8f0;
+    font-size: 13px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}

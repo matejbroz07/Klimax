@@ -7,12 +7,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const state = {
         realizace: [],
         downloads: [],
+        brands: [],
         availableLogos: [],
         config: {},
         activeTab: 'realizace',
         realFilterBrand: 'all',
         realSearchQuery: '',
-        downSearchQuery: ''
+        downSearchQuery: '',
+        brandSearchQuery: ''
     };
 
     // Inicializace elementů
@@ -21,10 +23,13 @@ document.addEventListener('DOMContentLoaded', () => {
         tabPanels: document.querySelectorAll('.tab-panel'),
         realGrid: document.getElementById('realizace-grid'),
         downList: document.getElementById('downloads-list'),
+        brandsGrid: document.getElementById('brands-grid'),
         realCountBadge: document.getElementById('real-count-badge'),
         downCountBadge: document.getElementById('down-count-badge'),
+        brandCountBadge: document.getElementById('brand-count-badge'),
         statRealCount: document.getElementById('stat-real-count'),
         statDownCount: document.getElementById('stat-down-count'),
+        statBrandCount: document.getElementById('stat-brand-count'),
         statLastSync: document.getElementById('stat-last-sync'),
         lastSyncHeader: document.getElementById('last-sync-header'),
         btnSyncAll: document.getElementById('btn-sync-all'),
@@ -34,21 +39,25 @@ document.addEventListener('DOMContentLoaded', () => {
         // Filtry a vyhledávání
         realSearch: document.getElementById('real-search'),
         downSearch: document.getElementById('down-search'),
+        brandSearch: document.getElementById('brand-search'),
         realFilterPills: document.querySelectorAll('.filter-pill[data-brand]'),
         
         // Modály
         modalReal: document.getElementById('modal-realizace'),
         modalDown: document.getElementById('modal-download'),
+        modalBrand: document.getElementById('modal-brand'),
         modalConfirm: document.getElementById('modal-confirm'),
         
         // Formuláře
         formReal: document.getElementById('form-realizace'),
         formDown: document.getElementById('form-download'),
+        formBrand: document.getElementById('form-brand'),
         formPassword: document.getElementById('form-password'),
         
         // Tlačítka přidání
         btnAddReal: document.getElementById('btn-add-realizace'),
-        btnAddDown: document.getElementById('btn-add-download')
+        btnAddDown: document.getElementById('btn-add-download'),
+        btnAddBrand: document.getElementById('btn-add-brand')
     };
 
     // ==========================================
@@ -144,12 +153,14 @@ document.addEventListener('DOMContentLoaded', () => {
             if (data.success) {
                 state.realizace = data.realizace || [];
                 state.downloads = data.downloads || [];
+                state.brands = data.brands || [];
                 state.availableLogos = data.availableLogos || [];
                 state.config = data.config || {};
 
                 updateStats();
                 renderRealizace();
                 renderDownloads();
+                renderBrands();
             } else {
                 showToast(data.message || 'Chyba při načítání dat', 'error');
             }
@@ -162,8 +173,10 @@ document.addEventListener('DOMContentLoaded', () => {
     function updateStats() {
         if (elements.realCountBadge) elements.realCountBadge.textContent = state.realizace.length;
         if (elements.downCountBadge) elements.downCountBadge.textContent = state.downloads.length;
+        if (elements.brandCountBadge) elements.brandCountBadge.textContent = state.brands.length;
         if (elements.statRealCount) elements.statRealCount.textContent = state.realizace.length;
         if (elements.statDownCount) elements.statDownCount.textContent = state.downloads.length;
+        if (elements.statBrandCount) elements.statBrandCount.textContent = state.brands.length;
 
         const lastSync = state.config.last_sync ? state.config.last_sync : 'Zatím neproběhla';
         if (elements.statLastSync) elements.statLastSync.textContent = lastSync;
@@ -348,6 +361,147 @@ document.addEventListener('DOMContentLoaded', () => {
         elements.downSearch.addEventListener('input', (e) => {
             state.downSearchQuery = e.target.value.trim();
             renderDownloads();
+        });
+    }
+
+    // ==========================================
+    // VYKRESLENÍ ZNAČEK V CAROUSELU
+    // ==========================================
+    function renderBrands() {
+        if (!elements.brandsGrid) return;
+
+        let filtered = state.brands.filter(item => {
+            if (!state.brandSearchQuery) return true;
+            return (item.name || '').toLowerCase().includes(state.brandSearchQuery.toLowerCase());
+        });
+
+        if (filtered.length === 0) {
+            elements.brandsGrid.innerHTML = `
+                <div class="empty-state" style="grid-column: 1 / -1;">
+                    <div class="empty-state__icon">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                    </div>
+                    <h3 class="empty-state__title">Žádné značky k zobrazení</h3>
+                    <p class="empty-state__desc">Zkuste upravit vyhledávání nebo přidejte novou značku do carouselu.</p>
+                </div>
+            `;
+            return;
+        }
+
+        elements.brandsGrid.innerHTML = filtered.map((item, index) => {
+            const id = item.id;
+            const name = escapeHtml(item.name || 'Bez názvu');
+            const image = escapeHtml(item.image || '');
+            const isFirst = index === 0;
+            const isLast = index === filtered.length - 1;
+
+            return `
+                <div class="brand-card" data-id="${id}">
+                    <div class="brand-card__preview">
+                        <span class="brand-card__order-badge">#${index + 1}</span>
+                        <img src="../${image}" alt="${name}" class="brand-card__img" loading="lazy" onerror="this.style.opacity='0.2'">
+                    </div>
+                    <div class="brand-card__body">
+                        <div>
+                            <h4 class="brand-card__name" title="${name}">${name}</h4>
+                            <div class="brand-card__file" title="${image}">${image}</div>
+                        </div>
+                        <div class="brand-card__footer">
+                            <div class="brand-card__reorder">
+                                <button type="button" class="btn btn--secondary btn-move-brand-up" data-id="${id}" ${isFirst ? 'disabled' : ''} title="Posunout v carouselu dopředu">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="18 15 12 9 6 15"></polyline></svg>
+                                </button>
+                                <button type="button" class="btn btn--secondary btn-move-brand-down" data-id="${id}" ${isLast ? 'disabled' : ''} title="Posunout v carouselu dozadu">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                                </button>
+                            </div>
+                            <div class="brand-card__actions">
+                                <button type="button" class="btn btn--secondary btn-edit-brand" data-id="${id}" title="Upravit značku">
+                                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                                    Upravit
+                                </button>
+                                <button type="button" class="btn btn--danger btn--icon-only btn-del-brand" data-id="${id}" data-name="${name}" title="Smazat">
+                                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }).join('');
+
+        // Event listenery pro tlačítka v kartách
+        elements.brandsGrid.querySelectorAll('.btn-edit-brand').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const id = parseInt(btn.getAttribute('data-id'), 10);
+                const item = state.brands.find(b => b.id === id);
+                if (item) openBrandModal(item);
+            });
+        });
+
+        elements.brandsGrid.querySelectorAll('.btn-del-brand').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const id = parseInt(btn.getAttribute('data-id'), 10);
+                const name = btn.getAttribute('data-name');
+                confirmDelete('brand', id, name);
+            });
+        });
+
+        elements.brandsGrid.querySelectorAll('.btn-move-brand-up').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const id = parseInt(btn.getAttribute('data-id'), 10);
+                moveBrand(id, -1);
+            });
+        });
+
+        elements.brandsGrid.querySelectorAll('.btn-move-brand-down').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const id = parseInt(btn.getAttribute('data-id'), 10);
+                moveBrand(id, 1);
+            });
+        });
+    }
+
+    async function moveBrand(id, direction) {
+        const index = state.brands.findIndex(b => b.id === id);
+        if (index === -1) return;
+        const targetIndex = index + direction;
+        if (targetIndex < 0 || targetIndex >= state.brands.length) return;
+
+        // Prohodit v poli
+        const temp = state.brands[index];
+        state.brands[index] = state.brands[targetIndex];
+        state.brands[targetIndex] = temp;
+
+        renderBrands();
+
+        try {
+            const formData = new FormData();
+            formData.append('action', 'reorder_brands');
+            state.brands.forEach(b => formData.append('ids[]', b.id));
+
+            const res = await fetch('api.php', {
+                method: 'POST',
+                body: formData
+            });
+            const data = await res.json();
+            if (data.success) {
+                showToast(data.message, 'success');
+            } else {
+                showToast(data.message || 'Chyba při změně pořadí', 'error');
+                await loadData();
+            }
+        } catch (err) {
+            console.error(err);
+            showToast('Chyba při komunikaci se serverem', 'error');
+            await loadData();
+        }
+    }
+
+    if (elements.brandSearch) {
+        elements.brandSearch.addEventListener('input', (e) => {
+            state.brandSearchQuery = e.target.value.trim();
+            renderBrands();
         });
     }
 
@@ -566,6 +720,107 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // ==========================================
+    // MODÁL: ZNAČKA V CAROUSELU (PŘIDAT / UPRAVIT)
+    // ==========================================
+    const brandIdInput = document.getElementById('brand-id');
+    const brandNameInput = document.getElementById('brand-name');
+    const brandImageUrlInput = document.getElementById('brand-image-url');
+    const brandFileInput = document.getElementById('brand-image-file');
+    const brandImagePreview = document.getElementById('brand-image-preview');
+
+    function openBrandModal(item = null) {
+        const modalTitle = document.getElementById('modal-brand-title');
+        elements.formBrand.reset();
+
+        if (item) {
+            modalTitle.textContent = 'Upravit značku v carouselu';
+            brandIdInput.value = item.id;
+            brandNameInput.value = item.name || '';
+            brandImageUrlInput.value = item.image || '';
+
+            if (brandImagePreview) {
+                brandImagePreview.innerHTML = item.image ? `
+                    <div class="file-preview">
+                        <img src="../${escapeHtml(item.image)}" alt="${escapeHtml(item.name)}" class="file-preview__img">
+                        <span class="file-preview__name">${escapeHtml(item.image)}</span>
+                    </div>
+                ` : '';
+            }
+        } else {
+            modalTitle.textContent = 'Přidat novou značku do carouselu';
+            brandIdInput.value = '';
+            brandNameInput.value = '';
+            brandImageUrlInput.value = '';
+            if (brandImagePreview) brandImagePreview.innerHTML = '';
+        }
+
+        openModal(elements.modalBrand);
+    }
+
+    if (elements.btnAddBrand) {
+        elements.btnAddBrand.addEventListener('click', () => openBrandModal(null));
+    }
+
+    // Náhled vybraného souboru loga
+    if (brandFileInput) {
+        brandFileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file && brandImagePreview) {
+                if (!brandNameInput.value) {
+                    const nameWithoutExt = file.name.substring(0, file.name.lastIndexOf('.')) || file.name;
+                    brandNameInput.value = nameWithoutExt.replace(/[-_]/g, ' ').toUpperCase();
+                }
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    brandImagePreview.innerHTML = `
+                        <div class="file-preview">
+                            <img src="${event.target.result}" alt="Náhled" class="file-preview__img">
+                            <span class="file-preview__name">${escapeHtml(file.name)} (${(file.size / 1024 / 1024).toFixed(2)} MB)</span>
+                        </div>
+                    `;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    }
+
+    // Odeslání formuláře značky
+    if (elements.formBrand) {
+        elements.formBrand.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const submitBtn = elements.formBrand.querySelector('button[type="submit"]');
+            const originalText = submitBtn.textContent;
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Ukládám...';
+
+            try {
+                const formData = new FormData(elements.formBrand);
+                formData.append('action', 'save_brand');
+
+                const res = await fetch('api.php', {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await res.json();
+
+                if (data.success) {
+                    showToast(data.message, 'success');
+                    closeModal(elements.modalBrand);
+                    await loadData();
+                } else {
+                    showToast(data.message || 'Chyba při ukládání značky', 'error');
+                }
+            } catch (err) {
+                console.error(err);
+                showToast('Chyba při komunikaci se serverem', 'error');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = originalText;
+            }
+        });
+    }
+
+    // ==========================================
     // POTVRZENÍ SMAZÁNÍ
     // ==========================================
     let pendingDelete = null;
@@ -587,7 +842,10 @@ document.addEventListener('DOMContentLoaded', () => {
             btnConfirmDelete.disabled = true;
 
             try {
-                const action = type === 'realizace' ? 'delete_realizace' : 'delete_download';
+                let action = 'delete_realizace';
+                if (type === 'download') action = 'delete_download';
+                if (type === 'brand') action = 'delete_brand';
+
                 const formData = new FormData();
                 formData.append('action', action);
                 formData.append('id', id);

@@ -91,6 +91,11 @@ try {
                 $downloads = json_decode(file_get_contents(DOWNLOADS_JSON), true) ?: [];
             }
 
+            $brands = [];
+            if (file_exists(BRANDS_JSON)) {
+                $brands = json_decode(file_get_contents(BRANDS_JSON), true) ?: [];
+            }
+
             $config = get_admin_config();
 
             // Dostupné loga značek
@@ -107,6 +112,7 @@ try {
                 'success' => true,
                 'realizace' => $realizace,
                 'downloads' => $downloads,
+                'brands' => $brands,
                 'availableLogos' => $availableLogos,
                 'config' => [
                     'site_title' => $config['site_title'] ?? 'KLIMAX Administrace',
@@ -442,12 +448,155 @@ try {
             echo json_encode(['success' => true, 'message' => 'Pořadí souborů ke stažení bylo uloženo.']);
             break;
 
+        case 'save_brand':
+            $id = isset($_POST['id']) && $_POST['id'] !== '' ? (int)$_POST['id'] : null;
+            $name = trim($_POST['name'] ?? '');
+            $image = trim($_POST['image'] ?? $_POST['imageUrl'] ?? '');
+
+            if (empty($name)) {
+                throw new Exception('Název značky je povinný.');
+            }
+
+            // Zpracování uploadu loga
+            $brandUpload = $_FILES['brand_file'] ?? $_FILES['brand_image'] ?? null;
+            if ($brandUpload && $brandUpload['error'] === UPLOAD_ERR_OK) {
+                $file = $brandUpload;
+                $allowedExts = ['webp', 'png', 'svg', 'jpg', 'jpeg', 'gif'];
+                $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+
+                if (!in_array($ext, $allowedExts)) {
+                    throw new Exception('Nepovolený formát obrázku. Povolené formáty: ' . implode(', ', $allowedExts));
+                }
+
+                $cleanName = sanitize_filename($file['name']);
+                $targetFile = UPLOADS_BRANDS_DIR . '/' . $cleanName;
+
+                if (file_exists($targetFile)) {
+                    $cleanName = pathinfo($cleanName, PATHINFO_FILENAME) . '_' . time() . '.' . $ext;
+                    $targetFile = UPLOADS_BRANDS_DIR . '/' . $cleanName;
+                }
+
+                if (!move_uploaded_file($file['tmp_name'], $targetFile)) {
+                    throw new Exception('Nahrávání loga značky na server selhalo.');
+                }
+
+                $image = 'assets/brands/' . $cleanName;
+            }
+
+            if (empty($image)) {
+                throw new Exception('Musíte nahrát logo nebo zadat cestu k obrázku.');
+            }
+
+            $items = file_exists(BRANDS_JSON) ? (json_decode(file_get_contents(BRANDS_JSON), true) ?: []) : [];
+
+            $savedItem = null;
+            if ($id !== null && $id > 0) {
+                $found = false;
+                foreach ($items as &$item) {
+                    if ((int)$item['id'] === $id) {
+                        $item['name'] = $name;
+                        $item['image'] = $image;
+                        $savedItem = $item;
+                        $found = true;
+                        break;
+                    }
+                }
+                unset($item);
+                if (!$found) {
+                    throw new Exception('Značka s ID ' . $id . ' nebyla nalezena.');
+                }
+            } else {
+                $maxId = 0;
+                foreach ($items as $item) {
+                    if ((int)$item['id'] > $maxId) {
+                        $maxId = (int)$item['id'];
+                    }
+                }
+                $newId = $maxId + 1;
+                $savedItem = [
+                    'id' => $newId,
+                    'name' => $name,
+                    'image' => $image
+                ];
+                $items[] = $savedItem;
+            }
+
+            file_put_contents(BRANDS_JSON, json_encode($items, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+            sync_brands_html($items);
+
+            echo json_encode([
+                'success' => true,
+                'message' => 'Značka byla úspěšně uložena a carousel v index.html aktualizován.',
+                'item' => $savedItem
+            ]);
+            break;
+
+        case 'delete_brand':
+            $id = (int)($_POST['id'] ?? 0);
+            if ($id <= 0) {
+                throw new Exception('Neplatné ID značky.');
+            }
+
+            $items = file_exists(BRANDS_JSON) ? (json_decode(file_get_contents(BRANDS_JSON), true) ?: []) : [];
+            $filtered = [];
+            $found = false;
+            foreach ($items as $item) {
+                if ((int)$item['id'] === $id) {
+                    $found = true;
+                    continue;
+                }
+                $filtered[] = $item;
+            }
+
+            if (!$found) {
+                throw new Exception('Značka k odstranění nebyla nalezena.');
+            }
+
+            file_put_contents(BRANDS_JSON, json_encode($filtered, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+            sync_brands_html($filtered);
+
+            echo json_encode([
+                'success' => true,
+                'message' => 'Značka byla úspěšně smazána a carousel v index.html aktualizován.'
+            ]);
+            break;
+
+        case 'reorder_brands':
+            $ids = $_POST['ids'] ?? [];
+            if (!is_array($ids) || empty($ids)) {
+                throw new Exception('Neplatná data pro změnu pořadí.');
+            }
+
+            $items = file_exists(BRANDS_JSON) ? (json_decode(file_get_contents(BRANDS_JSON), true) ?: []) : [];
+            $indexed = [];
+            foreach ($items as $item) {
+                $indexed[(int)$item['id']] = $item;
+            }
+
+            $newItems = [];
+            foreach ($ids as $id) {
+                $id = (int)$id;
+                if (isset($indexed[$id])) {
+                    $newItems[] = $indexed[$id];
+                    unset($indexed[$id]);
+                }
+            }
+            foreach ($indexed as $item) {
+                $newItems[] = $item;
+            }
+
+            file_put_contents(BRANDS_JSON, json_encode($newItems, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+            sync_brands_html($newItems);
+
+            echo json_encode(['success' => true, 'message' => 'Pořadí značek v carouselu bylo uloženo.']);
+            break;
+
         case 'sync_all':
             if (sync_all()) {
                 $cfg = get_admin_config();
                 echo json_encode([
                     'success' => true,
-                    'message' => 'Všechny HTML šablony (reference.html i pro-partnery.html) byly úspěšně vygenerovány.',
+                    'message' => 'Všechny HTML šablony (reference.html, pro-partnery.html i index.html) byly úspěšně vygenerovány.',
                     'last_sync' => $cfg['last_sync']
                 ]);
             } else {

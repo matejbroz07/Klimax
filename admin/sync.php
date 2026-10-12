@@ -5,6 +5,7 @@ require_once __DIR__ . '/config.php';
 
 define('REFERENCE_HTML', __DIR__ . '/../reference.html');
 define('PRO_PARTNERY_HTML', __DIR__ . '/../pro-partnery.html');
+define('INDEX_HTML', __DIR__ . '/../index.html');
 
 /**
  * Synchronizace realizací do reference.html
@@ -126,15 +127,62 @@ function sync_downloads_html($items = null) {
 }
 
 /**
+ * Synchronizace značek carouselu do index.html
+ */
+function sync_brands_html($items = null) {
+    if ($items === null) {
+        if (!file_exists(BRANDS_JSON)) {
+            return false;
+        }
+        $items = json_decode(file_get_contents(BRANDS_JSON), true);
+    }
+    if (!is_array($items) || !file_exists(INDEX_HTML)) {
+        return false;
+    }
+
+    $groupsHtml = "";
+    if (empty($items)) {
+        $groupsHtml .= "                <!-- Žádné značky v carouselu -->\n";
+    } else {
+        // Vygenerujeme 4 skupiny pro plynulý nekonečný marquee
+        for ($g = 1; $g <= 4; $g++) {
+            $ariaHidden = ($g > 1) ? ' aria-hidden="true"' : '';
+            $groupComment = ($g === 1) ? "<!-- Group 1 (original) -->" : "<!-- Group {$g} (duplicate) -->";
+
+            $groupsHtml .= "                {$groupComment}\n";
+            $groupsHtml .= "                <div class=\"trusted-carousel__group\"{$ariaHidden}>\n";
+            foreach ($items as $item) {
+                $img = htmlspecialchars($item['image'] ?? '');
+                $name = htmlspecialchars($item['name'] ?? '');
+                $groupsHtml .= "                    <img src=\"{$img}\" alt=\"{$name}\">\n";
+            }
+            $groupsHtml .= "                </div>\n";
+        }
+    }
+
+    $html = file_get_contents(INDEX_HTML);
+    $pattern = '/(<!--\s*CAROUSEL_BRANDS_START\s*-->).*?(<!--\s*CAROUSEL_BRANDS_END\s*-->)/s';
+    if (!preg_match($pattern, $html)) {
+        return false;
+    }
+
+    $replacement = "$1\n" . rtrim($groupsHtml) . "\n                $2";
+    $newHtml = preg_replace($pattern, $replacement, $html);
+
+    return file_put_contents(INDEX_HTML, $newHtml) !== false;
+}
+
+/**
  * Synchronizovat vše
  */
 function sync_all() {
     $r = sync_realizace_html();
     $d = sync_downloads_html();
+    $b = sync_brands_html();
     
     $config = get_admin_config();
     $config['last_sync'] = date('Y-m-d H:i:s');
     save_admin_config($config);
 
-    return $r && $d;
+    return $r && $d && $b;
 }

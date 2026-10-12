@@ -9,8 +9,10 @@ define('ADMIN_CONFIG_FILE', __DIR__ . '/../data/admin_config.json');
 define('DATA_DIR', __DIR__ . '/../data');
 define('REALIZACE_JSON', DATA_DIR . '/realizace.json');
 define('DOWNLOADS_JSON', DATA_DIR . '/downloads.json');
+define('BRANDS_JSON', DATA_DIR . '/brands.json');
 define('UPLOADS_REALISATION_DIR', __DIR__ . '/../assets/realisation');
 define('UPLOADS_DOWNLOADS_DIR', __DIR__ . '/../assets/downloads');
+define('UPLOADS_BRANDS_DIR', __DIR__ . '/../assets/brands');
 
 // Ujistíme se, že složky existují
 if (!is_dir(DATA_DIR)) {
@@ -21,6 +23,9 @@ if (!is_dir(UPLOADS_REALISATION_DIR)) {
 }
 if (!is_dir(UPLOADS_DOWNLOADS_DIR)) {
     mkdir(UPLOADS_DOWNLOADS_DIR, 0755, true);
+}
+if (!is_dir(UPLOADS_BRANDS_DIR)) {
+    mkdir(UPLOADS_BRANDS_DIR, 0755, true);
 }
 
 /**

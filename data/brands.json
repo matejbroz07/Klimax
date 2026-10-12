@@ -1,0 +1,52 @@
+[
+  {
+    "id": 1,
+    "name": "AAA Auto",
+    "image": "assets/brands/aaa.webp"
+  },
+  {
+    "id": 2,
+    "name": "AGC",
+    "image": "assets/brands/agc.webp"
+  },
+  {
+    "id": 3,
+    "name": "Armáda ČR",
+    "image": "assets/brands/army.webp"
+  },
+  {
+    "id": 4,
+    "name": "BMW",
+    "image": "assets/brands/bmw.webp"
+  },
+  {
+    "id": 5,
+    "name": "ČEZ",
+    "image": "assets/brands/cez.webp"
+  },
+  {
+    "id": 6,
+    "name": "Nemocnice",
+    "image": "assets/brands/hospital.webp"
+  },
+  {
+    "id": 7,
+    "name": "Mercedes",
+    "image": "assets/brands/mercedes.webp"
+  },
+  {
+    "id": 8,
+    "name": "Mondi",
+    "image": "assets/brands/mondi.webp"
+  },
+  {
+    "id": 9,
+    "name": "OMV",
+    "image": "assets/brands/omv.webp"
+  },
+  {
+    "id": 10,
+    "name": "Pilsner Urquell",
+    "image": "assets/brands/pilsner.webp"
+  }
+]

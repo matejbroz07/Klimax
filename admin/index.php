@@ -138,6 +138,17 @@ if (file_exists(__DIR__ . '/admin.css')) {
             </div>
 
             <div class="stat-box">
+                <div class="stat-box__icon" style="color: #6366f1; border-color: rgba(99, 102, 241, 0.2);">
+                    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg>
+                </div>
+                <div>
+                    <div class="stat-box__label">Značky v carouselu</div>
+                    <div class="stat-box__value" id="stat-brand-count">0</div>
+                    <div class="stat-box__sub">index.html</div>
+                </div>
+            </div>
+
+            <div class="stat-box">
                 <div class="stat-box__icon stat-box__icon--green">
                     <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
                 </div>
@@ -155,6 +166,11 @@ if (file_exists(__DIR__ . '/admin.css')) {
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
                 Realizace a reference
                 <span class="admin-tab__count" id="real-count-badge">0</span>
+            </button>
+            <button class="admin-tab" data-tab="brands">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg>
+                Značky v carouselu (index.html)
+                <span class="admin-tab__count" id="brand-count-badge">0</span>
             </button>
             <button class="admin-tab" data-tab="downloads">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
@@ -218,7 +234,29 @@ if (file_exists(__DIR__ . '/admin.css')) {
         </section>
 
         <!-- =======================================================
-             PANEL 3: NASTAVENÍ A SYNCHRONIZACE
+             PANEL 3: ZNAČKY V CAROUSELU (INDEX.HTML)
+             ======================================================= -->
+        <section class="tab-panel" id="panel-brands">
+            <div class="panel-controls">
+                <div class="panel-controls__left">
+                    <div class="search-input-wrapper">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                        <input type="text" id="brand-search" class="search-input" placeholder="Hledat značku v carouselu...">
+                    </div>
+                </div>
+                <button type="button" class="btn btn--primary" id="btn-add-brand">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                    Přidat značku do carouselu
+                </button>
+            </div>
+
+            <div class="brands-grid" id="brands-grid">
+                <!-- Dynamicky vykresleno pomocí JS -->
+            </div>
+        </section>
+
+        <!-- =======================================================
+             PANEL 4: NASTAVENÍ A SYNCHRONIZACE
              ======================================================= -->
         <section class="tab-panel" id="panel-settings">
             <div class="settings-grid">
@@ -399,6 +437,50 @@ if (file_exists(__DIR__ . '/admin.css')) {
                 <div class="modal__footer">
                     <button type="button" class="btn btn--secondary" data-modal-close>Zrušit</button>
                     <button type="submit" class="btn btn--primary">Uložit soubor</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- =======================================================
+         MODÁL: PŘIDAT / UPRAVIT ZNAČKU DO CAROUSELU
+         ======================================================= -->
+    <div class="modal-overlay" id="modal-brand">
+        <div class="modal" style="max-width: 520px;">
+            <div class="modal__header">
+                <h3 class="modal__title" id="modal-brand-title">Přidat značku do carouselu</h3>
+                <button type="button" class="modal__close" data-modal-close aria-label="Zavřít">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
+            </div>
+            <form id="form-brand">
+                <input type="hidden" id="brand-id" name="id">
+                <input type="hidden" id="brand-image-url" name="image">
+
+                <div class="modal__body">
+                    <div class="form-group">
+                        <label for="brand-name" class="form-label">Název značky / klienta (alt text) *</label>
+                        <input type="text" id="brand-name" name="name" class="form-input" placeholder="např. BMW, Mercedes, ČEZ..." required>
+                        <div class="form-hint">Používá se pro vyhledávání a jako alternativní text obrázku.</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Logo značky *</label>
+                        <div class="dropzone" id="brand-dropzone">
+                            <div class="dropzone__icon">
+                                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+                            </div>
+                            <div class="dropzone__text">Klikněte nebo přetáhněte logo</div>
+                            <div class="dropzone__sub">Doporučeno: světlé/bílé logo SVG, WebP nebo PNG (max 10 MB)</div>
+                            <input type="file" id="brand-image-file" name="brand_file" accept="image/*,.svg">
+                        </div>
+                        <div id="brand-image-preview"></div>
+                    </div>
+                </div>
+
+                <div class="modal__footer">
+                    <button type="button" class="btn btn--secondary" data-modal-close>Zrušit</button>
+                    <button type="submit" class="btn btn--primary">Uložit značku</button>
                 </div>
             </form>
         </div>
