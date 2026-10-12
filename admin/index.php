@@ -279,6 +279,21 @@ if (file_exists(__DIR__ . '/admin.css')) {
                     </button>
                 </div>
 
+                <!-- Karta Úklid nepoužívaných souborů -->
+                <div class="settings-card">
+                    <h3 class="settings-card__title">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                        Úklid nepoužívaných souborů
+                    </h3>
+                    <p class="settings-card__desc">
+                        Smaže z disků (<code>assets/realisation/</code>, <code>assets/downloads/</code>, <code>assets/brands/</code>) nahrané soubory, které už nejsou přiřazeny k žádné realizaci, dokumentu ani značce.
+                    </p>
+                    <button type="button" class="btn btn--secondary" id="btn-cleanup-files">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                        Vyčistit nepoužívané soubory
+                    </button>
+                </div>
+
                 <!-- Karta Změna hesla -->
                 <div class="settings-card">
                     <h3 class="settings-card__title">
@@ -341,6 +356,7 @@ if (file_exists(__DIR__ . '/admin.css')) {
             <form id="form-realizace">
                 <input type="hidden" id="real-id" name="id">
                 <input type="hidden" id="real-image-url" name="image">
+                <input type="hidden" id="real-remove-image" name="remove_image" value="0">
                 <input type="hidden" id="real-brand-logo" name="brandLogo" value="assets/images/Hisense.webp">
 
                 <div class="modal__body">
@@ -395,6 +411,7 @@ if (file_exists(__DIR__ . '/admin.css')) {
             <form id="form-download">
                 <input type="hidden" id="down-id" name="id">
                 <input type="hidden" id="down-file-url" name="fileUrl">
+                <input type="hidden" id="down-remove-file" name="remove_file" value="0">
 
                 <div class="modal__body">
                     <div class="form-group">
@@ -456,6 +473,7 @@ if (file_exists(__DIR__ . '/admin.css')) {
             <form id="form-brand">
                 <input type="hidden" id="brand-id" name="id">
                 <input type="hidden" id="brand-image-url" name="image">
+                <input type="hidden" id="brand-remove-image" name="remove_image" value="0">
 
                 <div class="modal__body">
                     <div class="form-group">

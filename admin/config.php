@@ -14,18 +14,14 @@ define('UPLOADS_REALISATION_DIR', __DIR__ . '/../assets/realisation');
 define('UPLOADS_DOWNLOADS_DIR', __DIR__ . '/../assets/downloads');
 define('UPLOADS_BRANDS_DIR', __DIR__ . '/../assets/brands');
 
-// Ujistíme se, že složky existují
-if (!is_dir(DATA_DIR)) {
-    mkdir(DATA_DIR, 0755, true);
-}
-if (!is_dir(UPLOADS_REALISATION_DIR)) {
-    mkdir(UPLOADS_REALISATION_DIR, 0755, true);
-}
-if (!is_dir(UPLOADS_DOWNLOADS_DIR)) {
-    mkdir(UPLOADS_DOWNLOADS_DIR, 0755, true);
-}
-if (!is_dir(UPLOADS_BRANDS_DIR)) {
-    mkdir(UPLOADS_BRANDS_DIR, 0755, true);
+// Ujistíme se, že složky existují a mají plná práva pro zápis webového serveru
+foreach ([DATA_DIR, UPLOADS_REALISATION_DIR, UPLOADS_DOWNLOADS_DIR, UPLOADS_BRANDS_DIR] as $dir) {
+    if (!is_dir($dir)) {
+        @mkdir($dir, 0777, true);
+    }
+    if (is_dir($dir) && !is_writable($dir)) {
+        @chmod($dir, 0777);
+    }
 }
 
 /**

@@ -514,10 +514,70 @@ document.addEventListener('DOMContentLoaded', () => {
     const realImageInput = document.getElementById('real-image-url');
     const realFileInput = document.getElementById('real-image-file');
     const realImagePreview = document.getElementById('real-image-preview');
+    const realRemoveImageInput = document.getElementById('real-remove-image');
+
+    function renderRealPreview(imgSrc, isNewFile = false, fileName = '') {
+        if (!realImagePreview) return;
+        if (!imgSrc) {
+            realImagePreview.innerHTML = '';
+            return;
+        }
+
+        const displayName = fileName || imgSrc;
+        const srcAttr = isNewFile ? imgSrc : `../${imgSrc}`;
+
+        realImagePreview.innerHTML = `
+            <div class="file-preview">
+                <img src="${srcAttr}" alt="Náhled" class="file-preview__img" onerror="this.src='../assets/images/gallery_office.png'">
+                <span class="file-preview__name">${escapeHtml(displayName)}</span>
+                <button type="button" class="file-preview__remove" id="btn-remove-real-preview" title="Odstranit obrázek">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                    ${isNewFile ? 'Zrušit' : 'Odebrat'}
+                </button>
+            </div>
+        `;
+
+        const btnRemove = realImagePreview.querySelector('#btn-remove-real-preview');
+        if (btnRemove) {
+            btnRemove.addEventListener('click', () => {
+                if (isNewFile) {
+                    if (realFileInput) realFileInput.value = '';
+                    if (realImageInput.value) {
+                        renderRealPreview(realImageInput.value, false);
+                    } else {
+                        realImagePreview.innerHTML = '';
+                    }
+                } else {
+                    realImageInput.value = '';
+                    if (realRemoveImageInput) realRemoveImageInput.value = '1';
+                    if (realFileInput) realFileInput.value = '';
+                    realImagePreview.innerHTML = `
+                        <div class="file-preview" style="background: rgba(239, 68, 68, 0.08); border-color: rgba(239, 68, 68, 0.25);">
+                            <span class="file-preview__name" style="color: var(--accent-red); font-size: 13px;">Obrázek bude odstraněn ze složky a nahrazen výchozím.</span>
+                            <button type="button" class="btn btn--secondary btn--sm" id="btn-undo-real-remove" style="font-size: 11px; padding: 2px 8px;">Vrátit</button>
+                        </div>
+                    `;
+                    const btnUndo = realImagePreview.querySelector('#btn-undo-real-remove');
+                    if (btnUndo) {
+                        btnUndo.addEventListener('click', () => {
+                            const curId = parseInt(realIdInput.value, 10);
+                            const curItem = state.realizace.find(r => r.id === curId);
+                            if (curItem) {
+                                realImageInput.value = curItem.image;
+                                if (realRemoveImageInput) realRemoveImageInput.value = '0';
+                                renderRealPreview(curItem.image, false);
+                            }
+                        });
+                    }
+                }
+            });
+        }
+    }
 
     function openRealizaceModal(item = null) {
         const modalTitle = document.getElementById('modal-realizace-title');
         elements.formReal.reset();
+        if (realRemoveImageInput) realRemoveImageInput.value = '0';
 
         if (item) {
             modalTitle.textContent = 'Upravit realizaci';
@@ -526,14 +586,7 @@ document.addEventListener('DOMContentLoaded', () => {
             realBrandSelect.value = (item.brand || 'hisense').toLowerCase();
             realImageInput.value = item.image || '';
 
-            if (realImagePreview) {
-                realImagePreview.innerHTML = `
-                    <div class="file-preview">
-                        <img src="../${item.image}" alt="Náhled" class="file-preview__img">
-                        <span class="file-preview__name">${item.image}</span>
-                    </div>
-                `;
-            }
+            renderRealPreview(item.image, false);
         } else {
             modalTitle.textContent = 'Přidat novou realizaci';
             realIdInput.value = '';
@@ -555,14 +608,10 @@ document.addEventListener('DOMContentLoaded', () => {
         realFileInput.addEventListener('change', (e) => {
             const file = e.target.files[0];
             if (file && realImagePreview) {
+                if (realRemoveImageInput) realRemoveImageInput.value = '0';
                 const reader = new FileReader();
                 reader.onload = (event) => {
-                    realImagePreview.innerHTML = `
-                        <div class="file-preview">
-                            <img src="${event.target.result}" alt="Náhled" class="file-preview__img">
-                            <span class="file-preview__name">${escapeHtml(file.name)} (${(file.size / 1024 / 1024).toFixed(2)} MB)</span>
-                        </div>
-                    `;
+                    renderRealPreview(event.target.result, true, `${file.name} (${(file.size / 1024 / 1024).toFixed(2)} MB)`);
                 };
                 reader.readAsDataURL(file);
             }
@@ -615,10 +664,67 @@ document.addEventListener('DOMContentLoaded', () => {
     const downFileInput = document.getElementById('down-file');
     const downUrlInput = document.getElementById('down-file-url');
     const downFilePreview = document.getElementById('down-file-preview');
+    const downRemoveFileInput = document.getElementById('down-remove-file');
+
+    function renderDownPreview(filePath, isNewFile = false, displayName = '') {
+        if (!downFilePreview) return;
+        if (!filePath) {
+            downFilePreview.innerHTML = '';
+            return;
+        }
+
+        const name = displayName || `Stávající soubor: ${filePath}`;
+        downFilePreview.innerHTML = `
+            <div class="file-preview">
+                <span class="file-preview__name">${escapeHtml(name)}</span>
+                <button type="button" class="file-preview__remove" id="btn-remove-down-preview" title="Odstranit soubor">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                    ${isNewFile ? 'Zrušit' : 'Odebrat'}
+                </button>
+            </div>
+        `;
+
+        const btnRemove = downFilePreview.querySelector('#btn-remove-down-preview');
+        if (btnRemove) {
+            btnRemove.addEventListener('click', () => {
+                if (isNewFile) {
+                    if (downFileInput) downFileInput.value = '';
+                    if (downUrlInput.value) {
+                        renderDownPreview(downUrlInput.value, false);
+                    } else {
+                        downFilePreview.innerHTML = '';
+                    }
+                } else {
+                    downUrlInput.value = '';
+                    if (downRemoveFileInput) downRemoveFileInput.value = '1';
+                    if (downFileInput) downFileInput.value = '';
+                    downFilePreview.innerHTML = `
+                        <div class="file-preview" style="background: rgba(239, 68, 68, 0.08); border-color: rgba(239, 68, 68, 0.25);">
+                            <span class="file-preview__name" style="color: var(--accent-red); font-size: 13px;">Soubor bude odstraněn ze složky ke stažení.</span>
+                            <button type="button" class="btn btn--secondary btn--sm" id="btn-undo-down-remove" style="font-size: 11px; padding: 2px 8px;">Vrátit</button>
+                        </div>
+                    `;
+                    const btnUndo = downFilePreview.querySelector('#btn-undo-down-remove');
+                    if (btnUndo) {
+                        btnUndo.addEventListener('click', () => {
+                            const curId = parseInt(downIdInput.value, 10);
+                            const curItem = state.downloads.find(d => d.id === curId);
+                            if (curItem) {
+                                downUrlInput.value = curItem.fileUrl;
+                                if (downRemoveFileInput) downRemoveFileInput.value = '0';
+                                renderDownPreview(curItem.fileUrl, false);
+                            }
+                        });
+                    }
+                }
+            });
+        }
+    }
 
     function openDownloadModal(item = null) {
         const modalTitle = document.getElementById('modal-download-title');
         elements.formDown.reset();
+        if (downRemoveFileInput) downRemoveFileInput.value = '0';
 
         if (item) {
             modalTitle.textContent = 'Upravit soubor ke stažení';
@@ -628,13 +734,7 @@ document.addEventListener('DOMContentLoaded', () => {
             downFileTypeSelect.value = (item.fileType || 'pdf').toLowerCase();
             downUrlInput.value = item.fileUrl || '';
 
-            if (downFilePreview) {
-                downFilePreview.innerHTML = item.fileUrl ? `
-                    <div class="file-preview">
-                        <span class="file-preview__name">Stávající soubor: ${escapeHtml(item.fileUrl)}</span>
-                    </div>
-                ` : '';
-            }
+            renderDownPreview(item.fileUrl, false);
         } else {
             modalTitle.textContent = 'Přidat nový soubor ke stažení';
             downIdInput.value = '';
@@ -657,6 +757,7 @@ document.addEventListener('DOMContentLoaded', () => {
         downFileInput.addEventListener('change', (e) => {
             const file = e.target.files[0];
             if (file) {
+                if (downRemoveFileInput) downRemoveFileInput.value = '0';
                 const ext = file.name.split('.').pop().toLowerCase();
                 const sizeMb = (file.size / (1024 * 1024)).toFixed(1);
                 
@@ -672,13 +773,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
                 downMetaInput.value = `${ext.toUpperCase()}, ${sizeMb} MB`;
 
-                if (downFilePreview) {
-                    downFilePreview.innerHTML = `
-                        <div class="file-preview">
-                            <span class="file-preview__name">${escapeHtml(file.name)} (${sizeMb} MB)</span>
-                        </div>
-                    `;
-                }
+                renderDownPreview(file.name, true, `${file.name} (${sizeMb} MB)`);
             }
         });
     }
@@ -727,10 +822,70 @@ document.addEventListener('DOMContentLoaded', () => {
     const brandImageUrlInput = document.getElementById('brand-image-url');
     const brandFileInput = document.getElementById('brand-image-file');
     const brandImagePreview = document.getElementById('brand-image-preview');
+    const brandRemoveImageInput = document.getElementById('brand-remove-image');
+
+    function renderBrandPreview(imgSrc, isNewFile = false, fileName = '') {
+        if (!brandImagePreview) return;
+        if (!imgSrc) {
+            brandImagePreview.innerHTML = '';
+            return;
+        }
+
+        const displayName = fileName || imgSrc;
+        const srcAttr = isNewFile ? imgSrc : `../${imgSrc}`;
+
+        brandImagePreview.innerHTML = `
+            <div class="file-preview">
+                <img src="${srcAttr}" alt="Náhled" class="file-preview__img" onerror="this.style.opacity='0.2'">
+                <span class="file-preview__name">${escapeHtml(displayName)}</span>
+                <button type="button" class="file-preview__remove" id="btn-remove-brand-preview" title="Zrušit nebo odebrat">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                    ${isNewFile ? 'Zrušit' : 'Odebrat'}
+                </button>
+            </div>
+        `;
+
+        const btnRemove = brandImagePreview.querySelector('#btn-remove-brand-preview');
+        if (btnRemove) {
+            btnRemove.addEventListener('click', () => {
+                if (isNewFile) {
+                    if (brandFileInput) brandFileInput.value = '';
+                    if (brandImageUrlInput.value) {
+                        renderBrandPreview(brandImageUrlInput.value, false);
+                    } else {
+                        brandImagePreview.innerHTML = '';
+                    }
+                } else {
+                    brandImageUrlInput.value = '';
+                    if (brandRemoveImageInput) brandRemoveImageInput.value = '1';
+                    if (brandFileInput) brandFileInput.value = '';
+                    brandImagePreview.innerHTML = `
+                        <div class="file-preview" style="background: rgba(239, 68, 68, 0.08); border-color: rgba(239, 68, 68, 0.25);">
+                            <span class="file-preview__name" style="color: var(--accent-red); font-size: 13px;">Logo bude odstraněno ze složky.</span>
+                            <button type="button" class="btn btn--secondary btn--sm" id="btn-undo-brand-remove" style="font-size: 11px; padding: 2px 8px;">Vrátit</button>
+                        </div>
+                    `;
+                    const btnUndo = brandImagePreview.querySelector('#btn-undo-brand-remove');
+                    if (btnUndo) {
+                        btnUndo.addEventListener('click', () => {
+                            const curId = parseInt(brandIdInput.value, 10);
+                            const curItem = state.brands.find(b => b.id === curId);
+                            if (curItem) {
+                                brandImageUrlInput.value = curItem.image;
+                                if (brandRemoveImageInput) brandRemoveImageInput.value = '0';
+                                renderBrandPreview(curItem.image, false);
+                            }
+                        });
+                    }
+                }
+            });
+        }
+    }
 
     function openBrandModal(item = null) {
         const modalTitle = document.getElementById('modal-brand-title');
         elements.formBrand.reset();
+        if (brandRemoveImageInput) brandRemoveImageInput.value = '0';
 
         if (item) {
             modalTitle.textContent = 'Upravit značku v carouselu';
@@ -738,14 +893,7 @@ document.addEventListener('DOMContentLoaded', () => {
             brandNameInput.value = item.name || '';
             brandImageUrlInput.value = item.image || '';
 
-            if (brandImagePreview) {
-                brandImagePreview.innerHTML = item.image ? `
-                    <div class="file-preview">
-                        <img src="../${escapeHtml(item.image)}" alt="${escapeHtml(item.name)}" class="file-preview__img">
-                        <span class="file-preview__name">${escapeHtml(item.image)}</span>
-                    </div>
-                ` : '';
-            }
+            renderBrandPreview(item.image, false);
         } else {
             modalTitle.textContent = 'Přidat novou značku do carouselu';
             brandIdInput.value = '';
@@ -766,18 +914,14 @@ document.addEventListener('DOMContentLoaded', () => {
         brandFileInput.addEventListener('change', (e) => {
             const file = e.target.files[0];
             if (file && brandImagePreview) {
+                if (brandRemoveImageInput) brandRemoveImageInput.value = '0';
                 if (!brandNameInput.value) {
                     const nameWithoutExt = file.name.substring(0, file.name.lastIndexOf('.')) || file.name;
                     brandNameInput.value = nameWithoutExt.replace(/[-_]/g, ' ').toUpperCase();
                 }
                 const reader = new FileReader();
                 reader.onload = (event) => {
-                    brandImagePreview.innerHTML = `
-                        <div class="file-preview">
-                            <img src="${event.target.result}" alt="Náhled" class="file-preview__img">
-                            <span class="file-preview__name">${escapeHtml(file.name)} (${(file.size / 1024 / 1024).toFixed(2)} MB)</span>
-                        </div>
-                    `;
+                    renderBrandPreview(event.target.result, true, `${file.name} (${(file.size / 1024 / 1024).toFixed(2)} MB)`);
                 };
                 reader.readAsDataURL(file);
             }
@@ -916,6 +1060,39 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     if (elements.btnSyncManual) {
         elements.btnSyncManual.addEventListener('click', () => triggerSyncAll(elements.btnSyncManual));
+    }
+
+    // Čištění nepoužívaných souborů ve složkách
+    const btnCleanupFiles = document.getElementById('btn-cleanup-files');
+    if (btnCleanupFiles) {
+        btnCleanupFiles.addEventListener('click', async () => {
+            const originalText = btnCleanupFiles.innerHTML;
+            btnCleanupFiles.disabled = true;
+            btnCleanupFiles.innerHTML = `<svg class="spin" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M12 6v6l4 2"></path></svg> Čistím složky...`;
+
+            try {
+                const formData = new FormData();
+                formData.append('action', 'cleanup_orphaned_files');
+
+                const res = await fetch('api.php', {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await res.json();
+
+                if (data.success) {
+                    showToast(data.message, 'success');
+                } else {
+                    showToast(data.message || 'Chyba při čištění složek', 'error');
+                }
+            } catch (err) {
+                console.error(err);
+                showToast('Chyba při komunikaci se serverem', 'error');
+            } finally {
+                btnCleanupFiles.disabled = false;
+                btnCleanupFiles.innerHTML = originalText;
+            }
+        });
     }
 
     // ==========================================

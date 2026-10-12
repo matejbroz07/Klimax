@@ -61,7 +61,11 @@ function sync_realizace_html($items = null) {
     $replacement = "$1\n" . rtrim($cardsHtml) . "\n                    $2";
     $newHtml = preg_replace($pattern, $replacement, $html);
 
-    return file_put_contents(REFERENCE_HTML, $newHtml) !== false;
+    $res = file_put_contents(REFERENCE_HTML, $newHtml) !== false;
+    if ($res) {
+        @chmod(REFERENCE_HTML, 0666);
+    }
+    return $res;
 }
 
 /**
@@ -123,7 +127,11 @@ function sync_downloads_html($items = null) {
     $replacement = "$1\n" . rtrim($cardsHtml) . "\n                    $2";
     $newHtml = preg_replace($pattern, $replacement, $html);
 
-    return file_put_contents(PRO_PARTNERY_HTML, $newHtml) !== false;
+    $res = file_put_contents(PRO_PARTNERY_HTML, $newHtml) !== false;
+    if ($res) {
+        @chmod(PRO_PARTNERY_HTML, 0666);
+    }
+    return $res;
 }
 
 /**
@@ -169,7 +177,11 @@ function sync_brands_html($items = null) {
     $replacement = "$1\n" . rtrim($groupsHtml) . "\n                $2";
     $newHtml = preg_replace($pattern, $replacement, $html);
 
-    return file_put_contents(INDEX_HTML, $newHtml) !== false;
+    $res = file_put_contents(INDEX_HTML, $newHtml) !== false;
+    if ($res) {
+        @chmod(INDEX_HTML, 0666);
+    }
+    return $res;
 }
 
 /**

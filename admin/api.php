@@ -77,6 +77,248 @@ function format_bytes($bytes, $precision = 1) {
     return round($bytes, $precision) . ' ' . $units[$pow];
 }
 
+/**
+ * Bezpečně smaže soubor ze složky uploadů, pokud již není referencován v poli zbývajících položek
+ */
+function delete_unused_upload_file($filePath, $allowedDir, array $remainingItems, $itemField = 'image') {
+    if (empty($filePath)) {
+        return false;
+    }
+
+    // Normalizujeme cestu k souboru
+    $normalizedTarget = ltrim(str_replace('\\', '/', $filePath), '/');
+    $basename = basename($normalizedTarget);
+
+    // Zkontrolujeme, zda stejný název souboru nebo cestu nepoužívá jiná existující položka
+    foreach ($remainingItems as $item) {
+        $itemPath = ltrim(str_replace('\\', '/', $item[$itemField] ?? ''), '/');
+        if (!empty($itemPath)) {
+            if ($itemPath === $normalizedTarget || basename($itemPath) === $basename) {
+                // Soubor je stále používán jinou položkou, nemazat!
+                return false;
+            }
+        }
+    }
+
+    // Zkontrolujeme, zda soubor leží ve složce $allowedDir
+    $realAllowedDir = realpath($allowedDir);
+    if (!$realAllowedDir) {
+        return false;
+    }
+
+    $baseProjectDir = realpath(__DIR__ . '/..');
+    $fullPath = $baseProjectDir ? ($baseProjectDir . '/' . $normalizedTarget) : null;
+
+    // Pokud $fullPath neexistuje, zkusíme přímo v $allowedDir podle basename
+    if (!$fullPath || !file_exists($fullPath)) {
+        $fullPath = $realAllowedDir . '/' . $basename;
+    }
+
+    if (!file_exists($fullPath) || !is_file($fullPath)) {
+        return false;
+    }
+
+    $realFilePath = realpath($fullPath);
+    // Bezpečnostní pojistka: Cesta souboru MUSÍ začínat cestou povoleného adresáře uploadu
+    if ($realFilePath && strpos($realFilePath, $realAllowedDir) === 0) {
+        return @unlink($realFilePath);
+    }
+
+    return false;
+}
+
+/**
+ * Optimalizace nahraného obrázku (zmenšení obřích rozměrů, komprese, odstranění metadat)
+ */
+function optimize_uploaded_image($filePath, $maxDimension = 1920, $jpegQuality = 85) {
+    if (!file_exists($filePath) || !function_exists('getimagesize')) {
+        return false;
+    }
+
+    $imageInfo = @getimagesize($filePath);
+    if (!$imageInfo) {
+        return false;
+    }
+
+    $width = $imageInfo[0];
+    $height = $imageInfo[1];
+    $mime = $imageInfo['mime'] ?? '';
+
+    // Podporujeme JPEG a PNG pro GD
+    if ($mime !== 'image/jpeg' && $mime !== 'image/png') {
+        return false;
+    }
+
+    $needsResize = ($width > $maxDimension || $height > $maxDimension);
+    $filesize = @filesize($filePath);
+
+    // Pokud je menší než maxDimension a velikost je rozumná (< 500 KB), není třeba reenkódovat
+    if (!$needsResize && $filesize < 512 * 1024 && $mime === 'image/jpeg') {
+        return false;
+    }
+
+    $src = null;
+    if ($mime === 'image/jpeg' && function_exists('imagecreatefromjpeg')) {
+        $src = @imagecreatefromjpeg($filePath);
+    } elseif ($mime === 'image/png' && function_exists('imagecreatefrompng')) {
+        $src = @imagecreatefrompng($filePath);
+    }
+
+    if (!$src) {
+        return false;
+    }
+
+    // Orientace podle EXIF (u fotek z mobilů)
+    if ($mime === 'image/jpeg' && function_exists('exif_read_data')) {
+        try {
+            $exif = @exif_read_data($filePath);
+            if (!empty($exif['Orientation'])) {
+                switch ($exif['Orientation']) {
+                    case 3:
+                        $src = imagerotate($src, 180, 0);
+                        break;
+                    case 6:
+                        $src = imagerotate($src, -90, 0);
+                        $w = $width; $width = $height; $height = $w;
+                        break;
+                    case 8:
+                        $src = imagerotate($src, 90, 0);
+                        $w = $width; $width = $height; $height = $w;
+                        break;
+                }
+            }
+        } catch (Exception $e) {
+            // Ignorovat případnou chybu v EXIF hlavičce
+        }
+    }
+
+    $newWidth = $width;
+    $newHeight = $height;
+
+    if ($needsResize) {
+        if ($width > $height) {
+            $newWidth = $maxDimension;
+            $newHeight = (int)round(($height / $width) * $maxDimension);
+        } else {
+            $newHeight = $maxDimension;
+            $newWidth = (int)round(($width / $height) * $maxDimension);
+        }
+    }
+
+    $dst = imagecreatetruecolor($newWidth, $newHeight);
+
+    if ($mime === 'image/png') {
+        imagealphablending($dst, false);
+        imagesavealpha($dst, true);
+        $transparent = imagecolorallocatealpha($dst, 255, 255, 255, 127);
+        imagefilledrectangle($dst, 0, 0, $newWidth, $newHeight, $transparent);
+    }
+
+    imagecopyresampled($dst, $src, 0, 0, 0, 0, $newWidth, $newHeight, $width, $height);
+
+    if ($mime === 'image/jpeg') {
+        imagejpeg($dst, $filePath, $jpegQuality);
+    } elseif ($mime === 'image/png') {
+        imagepng($dst, $filePath, 8);
+    }
+
+    imagedestroy($src);
+    imagedestroy($dst);
+    return true;
+}
+
+/**
+ * Prohledá složky uploadů a smaže všechny soubory, které už nejsou přiřazeny v žádném JSONu
+ */
+function cleanup_unused_upload_files() {
+    $realizace = file_exists(REALIZACE_JSON) ? (json_decode(file_get_contents(REALIZACE_JSON), true) ?: []) : [];
+    $downloads = file_exists(DOWNLOADS_JSON) ? (json_decode(file_get_contents(DOWNLOADS_JSON), true) ?: []) : [];
+    $brands = file_exists(BRANDS_JSON) ? (json_decode(file_get_contents(BRANDS_JSON), true) ?: []) : [];
+
+    $activeRealFiles = [];
+    foreach ($realizace as $r) {
+        if (!empty($r['image'])) {
+            $activeRealFiles[basename($r['image'])] = true;
+        }
+    }
+
+    $activeDownloadFiles = [];
+    foreach ($downloads as $d) {
+        if (!empty($d['fileUrl'])) {
+            $activeDownloadFiles[basename($d['fileUrl'])] = true;
+        }
+    }
+
+    $activeBrandFiles = [];
+    foreach ($brands as $b) {
+        if (!empty($b['image'])) {
+            $activeBrandFiles[basename($b['image'])] = true;
+        }
+    }
+
+    $deletedCount = 0;
+    $freedBytes = 0;
+    $deletedFiles = [];
+
+    // 1. UPLOADS_REALISATION_DIR
+    if (is_dir(UPLOADS_REALISATION_DIR)) {
+        $files = scandir(UPLOADS_REALISATION_DIR);
+        foreach ($files as $f) {
+            if ($f === '.' || $f === '..' || $f === '.gitkeep' || $f === '.gitignore') continue;
+            $path = UPLOADS_REALISATION_DIR . '/' . $f;
+            if (is_file($path) && !isset($activeRealFiles[$f])) {
+                $size = filesize($path);
+                if (@unlink($path)) {
+                    $deletedCount++;
+                    $freedBytes += $size;
+                    $deletedFiles[] = 'assets/realisation/' . $f;
+                }
+            }
+        }
+    }
+
+    // 2. UPLOADS_DOWNLOADS_DIR
+    if (is_dir(UPLOADS_DOWNLOADS_DIR)) {
+        $files = scandir(UPLOADS_DOWNLOADS_DIR);
+        foreach ($files as $f) {
+            if ($f === '.' || $f === '..' || $f === '.gitkeep' || $f === '.gitignore') continue;
+            $path = UPLOADS_DOWNLOADS_DIR . '/' . $f;
+            if (is_file($path) && !isset($activeDownloadFiles[$f])) {
+                $size = filesize($path);
+                if (@unlink($path)) {
+                    $deletedCount++;
+                    $freedBytes += $size;
+                    $deletedFiles[] = 'assets/downloads/' . $f;
+                }
+            }
+        }
+    }
+
+    // 3. UPLOADS_BRANDS_DIR
+    if (is_dir(UPLOADS_BRANDS_DIR)) {
+        $files = scandir(UPLOADS_BRANDS_DIR);
+        foreach ($files as $f) {
+            if ($f === '.' || $f === '..' || $f === '.gitkeep' || $f === '.gitignore') continue;
+            $path = UPLOADS_BRANDS_DIR . '/' . $f;
+            if (is_file($path) && !isset($activeBrandFiles[$f])) {
+                $size = filesize($path);
+                if (@unlink($path)) {
+                    $deletedCount++;
+                    $freedBytes += $size;
+                    $deletedFiles[] = 'assets/brands/' . $f;
+                }
+            }
+        }
+    }
+
+    return [
+        'count' => $deletedCount,
+        'freedBytes' => $freedBytes,
+        'freedFormatted' => format_bytes($freedBytes),
+        'files' => $deletedFiles
+    ];
+}
+
 // Obsluha chráněných akcí
 try {
     switch ($action) {
@@ -138,11 +380,27 @@ try {
             $hasBrandLogo = !empty($brandLogo);
             
             $image = trim($_POST['image'] ?? '');
+            $removeImage = !empty($_POST['remove_image']) && $_POST['remove_image'] === '1';
 
             if (empty($title)) {
                 throw new Exception('Název realizace je povinný.');
             }
 
+            // Načíst stávající realizace
+            $items = file_exists(REALIZACE_JSON) ? (json_decode(file_get_contents(REALIZACE_JSON), true) ?: []) : [];
+
+            // Zjistíme, zda upravujeme existující položku
+            $existingItem = null;
+            if ($id !== null && $id > 0) {
+                foreach ($items as $it) {
+                    if ((int)$it['id'] === $id) {
+                        $existingItem = $it;
+                        break;
+                    }
+                }
+            }
+
+            $newImageUploaded = false;
             // Zpracování uploadu obrázku
             if (isset($_FILES['image_file']) && $_FILES['image_file']['error'] === UPLOAD_ERR_OK) {
                 $file = $_FILES['image_file'];
@@ -165,16 +423,29 @@ try {
                 if (!move_uploaded_file($file['tmp_name'], $targetFile)) {
                     throw new Exception('Nahrávání souboru na server selhalo.');
                 }
+                @chmod($targetFile, 0666);
+
+                // Optimalizace obrázku (zmenšení rozměrů a optimalizace kvality)
+                optimize_uploaded_image($targetFile, 1920, 85);
+                @chmod($targetFile, 0666);
 
                 $image = 'assets/realisation/' . $cleanName;
+                $newImageUploaded = true;
             }
 
-            if (empty($image)) {
+            if ($removeImage) {
+                $image = 'assets/images/gallery_office.png';
+            } elseif (empty($image)) {
                 $image = 'assets/images/gallery_office.png';
             }
 
-            // Načíst stávající realizace
-            $items = file_exists(REALIZACE_JSON) ? (json_decode(file_get_contents(REALIZACE_JSON), true) ?: []) : [];
+            // Pokud se změnil / nahrál nový obrázek nebo byl odebrán, smažeme starý nahraný soubor z disku
+            if ($existingItem && !empty($existingItem['image'])) {
+                $oldImage = $existingItem['image'];
+                if ($oldImage !== $image && ($newImageUploaded || $removeImage)) {
+                    delete_unused_upload_file($oldImage, UPLOADS_REALISATION_DIR, $items, 'image');
+                }
+            }
 
             $savedItem = null;
             if ($id !== null && $id > 0) {
@@ -221,6 +492,7 @@ try {
 
             // Uložit JSON
             file_put_contents(REALIZACE_JSON, json_encode($items, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+            @chmod(REALIZACE_JSON, 0666);
 
             // Automatická synchronizace HTML
             sync_realizace_html($items);
@@ -240,22 +512,27 @@ try {
 
             $items = file_exists(REALIZACE_JSON) ? (json_decode(file_get_contents(REALIZACE_JSON), true) ?: []) : [];
             $filtered = [];
-            $found = false;
+            $deletedItem = null;
             foreach ($items as $item) {
                 if ((int)$item['id'] === $id) {
-                    $found = true;
-                    // Poznámka: soubor na disku nemažeme automaticky, aby nedošlo k poškození odkazů
+                    $deletedItem = $item;
                     continue;
                 }
                 $filtered[] = $item;
             }
 
-            if (!$found) {
+            if (!$deletedItem) {
                 throw new Exception('Realizace k odstranění nebyla nalezena.');
             }
 
             file_put_contents(REALIZACE_JSON, json_encode($filtered, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+            @chmod(REALIZACE_JSON, 0666);
             sync_realizace_html($filtered);
+
+            // Smazat nahraný soubor na disku ze složky assets/realisation, pokud již není používán jinou realizací
+            if (!empty($deletedItem['image'])) {
+                delete_unused_upload_file($deletedItem['image'], UPLOADS_REALISATION_DIR, $filtered, 'image');
+            }
 
             echo json_encode([
                 'success' => true,
@@ -300,11 +577,25 @@ try {
             $meta = trim($_POST['meta'] ?? '');
             $fileType = trim(strtolower($_POST['fileType'] ?? 'pdf'));
             $fileUrl = trim($_POST['fileUrl'] ?? '');
+            $removeFile = !empty($_POST['remove_file']) && $_POST['remove_file'] === '1';
 
             if (empty($title)) {
                 throw new Exception('Název souboru je povinný.');
             }
 
+            $items = file_exists(DOWNLOADS_JSON) ? (json_decode(file_get_contents(DOWNLOADS_JSON), true) ?: []) : [];
+
+            $existingItem = null;
+            if ($id !== null && $id > 0) {
+                foreach ($items as $it) {
+                    if ((int)$it['id'] === $id) {
+                        $existingItem = $it;
+                        break;
+                    }
+                }
+            }
+
+            $newFileUploaded = false;
             // Zpracování uploadu souboru
             if (isset($_FILES['download_file']) && $_FILES['download_file']['error'] === UPLOAD_ERR_OK) {
                 $file = $_FILES['download_file'];
@@ -326,20 +617,32 @@ try {
                 if (!move_uploaded_file($file['tmp_name'], $targetFile)) {
                     throw new Exception('Nahrání souboru na server selhalo.');
                 }
+                @chmod($targetFile, 0666);
 
                 $fileUrl = 'assets/downloads/' . $cleanName;
                 $fileType = $ext;
+                $newFileUploaded = true;
 
                 // Automatický výpočet velikosti pro meta popisek, pokud nebyl zadán specificky
                 $filesizeFormatted = format_bytes($file['size']);
                 $meta = strtoupper($ext) . ', ' . $filesizeFormatted;
             }
 
+            if ($removeFile) {
+                $fileUrl = '';
+            }
+
+            // Smazání starého souboru ze složky downloads při nahrazení nebo odebrání
+            if ($existingItem && !empty($existingItem['fileUrl'])) {
+                $oldFile = $existingItem['fileUrl'];
+                if ($oldFile !== $fileUrl && ($newFileUploaded || $removeFile)) {
+                    delete_unused_upload_file($oldFile, UPLOADS_DOWNLOADS_DIR, $items, 'fileUrl');
+                }
+            }
+
             if (empty($meta)) {
                 $meta = strtoupper($fileType ?: 'PDF');
             }
-
-            $items = file_exists(DOWNLOADS_JSON) ? (json_decode(file_get_contents(DOWNLOADS_JSON), true) ?: []) : [];
 
             $savedItem = null;
             if ($id !== null && $id > 0) {
@@ -378,6 +681,7 @@ try {
             }
 
             file_put_contents(DOWNLOADS_JSON, json_encode($items, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+            @chmod(DOWNLOADS_JSON, 0666);
             sync_downloads_html($items);
 
             echo json_encode([
@@ -395,22 +699,27 @@ try {
 
             $items = file_exists(DOWNLOADS_JSON) ? (json_decode(file_get_contents(DOWNLOADS_JSON), true) ?: []) : [];
             $filtered = [];
-            $found = false;
+            $deletedItem = null;
             foreach ($items as $item) {
                 if ((int)$item['id'] === $id) {
-                    $found = true;
-                    // Pokud soubor existuje ve složce downloads, můžeme ho volitelně smazat nebo zachovat
+                    $deletedItem = $item;
                     continue;
                 }
                 $filtered[] = $item;
             }
 
-            if (!$found) {
+            if (!$deletedItem) {
                 throw new Exception('Položka ke stažení k odstranění nebyla nalezena.');
             }
 
             file_put_contents(DOWNLOADS_JSON, json_encode($filtered, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+            @chmod(DOWNLOADS_JSON, 0666);
             sync_downloads_html($filtered);
+
+            // Smazat soubor ze složky assets/downloads na disku, pokud není používán jinou položkou
+            if (!empty($deletedItem['fileUrl'])) {
+                delete_unused_upload_file($deletedItem['fileUrl'], UPLOADS_DOWNLOADS_DIR, $filtered, 'fileUrl');
+            }
 
             echo json_encode([
                 'success' => true,
@@ -452,11 +761,25 @@ try {
             $id = isset($_POST['id']) && $_POST['id'] !== '' ? (int)$_POST['id'] : null;
             $name = trim($_POST['name'] ?? '');
             $image = trim($_POST['image'] ?? $_POST['imageUrl'] ?? '');
+            $removeImage = !empty($_POST['remove_image']) && $_POST['remove_image'] === '1';
 
             if (empty($name)) {
                 throw new Exception('Název značky je povinný.');
             }
 
+            $items = file_exists(BRANDS_JSON) ? (json_decode(file_get_contents(BRANDS_JSON), true) ?: []) : [];
+
+            $existingItem = null;
+            if ($id !== null && $id > 0) {
+                foreach ($items as $it) {
+                    if ((int)$it['id'] === $id) {
+                        $existingItem = $it;
+                        break;
+                    }
+                }
+            }
+
+            $newImageUploaded = false;
             // Zpracování uploadu loga
             $brandUpload = $_FILES['brand_file'] ?? $_FILES['brand_image'] ?? null;
             if ($brandUpload && $brandUpload['error'] === UPLOAD_ERR_OK) {
@@ -479,15 +802,31 @@ try {
                 if (!move_uploaded_file($file['tmp_name'], $targetFile)) {
                     throw new Exception('Nahrávání loga značky na server selhalo.');
                 }
+                @chmod($targetFile, 0666);
+
+                // Optimalizace loga značky (max 800px)
+                optimize_uploaded_image($targetFile, 800, 90);
+                @chmod($targetFile, 0666);
 
                 $image = 'assets/brands/' . $cleanName;
+                $newImageUploaded = true;
+            }
+
+            if ($removeImage) {
+                $image = '';
             }
 
             if (empty($image)) {
                 throw new Exception('Musíte nahrát logo nebo zadat cestu k obrázku.');
             }
 
-            $items = file_exists(BRANDS_JSON) ? (json_decode(file_get_contents(BRANDS_JSON), true) ?: []) : [];
+            // Smazání starého loga ze složky assets/brands při nahrazení
+            if ($existingItem && !empty($existingItem['image'])) {
+                $oldImage = $existingItem['image'];
+                if ($oldImage !== $image && $newImageUploaded) {
+                    delete_unused_upload_file($oldImage, UPLOADS_BRANDS_DIR, $items, 'image');
+                }
+            }
 
             $savedItem = null;
             if ($id !== null && $id > 0) {
@@ -522,6 +861,7 @@ try {
             }
 
             file_put_contents(BRANDS_JSON, json_encode($items, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+            @chmod(BRANDS_JSON, 0666);
             sync_brands_html($items);
 
             echo json_encode([
@@ -539,21 +879,27 @@ try {
 
             $items = file_exists(BRANDS_JSON) ? (json_decode(file_get_contents(BRANDS_JSON), true) ?: []) : [];
             $filtered = [];
-            $found = false;
+            $deletedItem = null;
             foreach ($items as $item) {
                 if ((int)$item['id'] === $id) {
-                    $found = true;
+                    $deletedItem = $item;
                     continue;
                 }
                 $filtered[] = $item;
             }
 
-            if (!$found) {
+            if (!$deletedItem) {
                 throw new Exception('Značka k odstranění nebyla nalezena.');
             }
 
             file_put_contents(BRANDS_JSON, json_encode($filtered, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+            @chmod(BRANDS_JSON, 0666);
             sync_brands_html($filtered);
+
+            // Smazat nahrané logo ze složky assets/brands na disku, pokud již není používáno jinou značkou
+            if (!empty($deletedItem['image'])) {
+                delete_unused_upload_file($deletedItem['image'], UPLOADS_BRANDS_DIR, $filtered, 'image');
+            }
 
             echo json_encode([
                 'success' => true,
@@ -623,6 +969,17 @@ try {
             echo json_encode([
                 'success' => true,
                 'message' => 'Administrační heslo bylo úspěšně změněno.'
+            ]);
+            break;
+
+        case 'cleanup_orphaned_files':
+            $result = cleanup_unused_upload_files();
+            echo json_encode([
+                'success' => true,
+                'message' => $result['count'] > 0
+                    ? ('Úspěšně vyčištěno ' . $result['count'] . ' nepoužívaných souborů (uvolněno ' . $result['freedFormatted'] . ').')
+                    : 'Všechny složky jsou čisté, žádné nepotřebné soubory nebyly nalezeny.',
+                'stats' => $result
             ]);
             break;
 

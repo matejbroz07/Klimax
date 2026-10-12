@@ -664,6 +664,26 @@ a:hover {
     text-overflow: ellipsis;
     white-space: nowrap;
 }
+.file-preview__remove {
+    background: transparent;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    color: #ef4444;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: var(--radius-sm);
+    font-size: 12px;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    transition: all 0.15s ease;
+    flex-shrink: 0;
+}
+.file-preview__remove:hover {
+    background: rgba(239, 68, 68, 0.1);
+    border-color: #ef4444;
+}
+
 
 /* Checkbox Switch */
 .switch-wrapper {

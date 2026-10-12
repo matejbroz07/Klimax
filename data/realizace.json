@@ -10,7 +10,7 @@
     },
     {
         "id": 2,
-        "title": "Hotel JALTA - Praha",
+        "title": "Hotel JALTA",
         "brand": "toshiba",
         "image": "assets\/realisation\/jalta.png",
         "hasBrandLogo": true,
@@ -101,10 +101,10 @@
     {
         "id": 12,
         "title": "Nemocnice Teplice",
-        "brand": "hisense",
-        "image": "assets\/images\/gallery_server.png",
-        "hasBrandLogo": false,
-        "brandLogo": "",
+        "brand": "toshiba",
+        "image": "assets\/realisation\/nemocnice.jpeg",
+        "hasBrandLogo": true,
+        "brandLogo": "assets\/images\/Toshiba.webp",
         "brandLabel": "Využívá:"
     }
 ]
